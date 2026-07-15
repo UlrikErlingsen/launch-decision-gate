@@ -1,0 +1,290 @@
+{
+  "metadata": {
+    "project_name": "LoopDose cleaning concentrate system",
+    "decision_question": "Should the fictional LoopDose concept receive funding for a bounded market pilot?",
+    "decision_owner": "HomeCare investment committee (fictional)",
+    "review_stage": "Concept evidence",
+    "currency": "NOK",
+    "discount_rate": 0.12
+  },
+  "criteria": [
+    {
+      "category": "Strategy",
+      "criterion": "Fits the sponsor's refill and reuse direction",
+      "weight": 12,
+      "score": 8,
+      "evidence_strength": 2,
+      "must_pass": false,
+      "threshold": 6,
+      "evidence_note": "Strategy memo and capability interview"
+    },
+    {
+      "category": "Customer",
+      "criterion": "Target households experience the stated storage problem",
+      "weight": 16,
+      "score": 7,
+      "evidence_strength": 2,
+      "must_pass": true,
+      "threshold": 6,
+      "evidence_note": "Twelve interviews plus a small concept survey"
+    },
+    {
+      "category": "Value",
+      "criterion": "The concept is meaningfully different from current refills",
+      "weight": 12,
+      "score": 7,
+      "evidence_strength": 2,
+      "must_pass": false,
+      "threshold": 6,
+      "evidence_note": "Competitor teardown and concept comparison"
+    },
+    {
+      "category": "Feasibility",
+      "criterion": "The metered cap performs consistently across concentrates",
+      "weight": 15,
+      "score": 6,
+      "evidence_strength": 1,
+      "must_pass": true,
+      "threshold": 6,
+      "evidence_note": "Bench prototype; extended-use test pending"
+    },
+    {
+      "category": "Safety",
+      "criterion": "Materials and instructions support safe intended use",
+      "weight": 10,
+      "score": 6,
+      "evidence_strength": 1,
+      "must_pass": true,
+      "threshold": 6,
+      "evidence_note": "Supplier declarations; compatibility test pending"
+    },
+    {
+      "category": "Economics",
+      "criterion": "Forward unit and project economics clear the hurdle",
+      "weight": 15,
+      "score": 7,
+      "evidence_strength": 2,
+      "must_pass": true,
+      "threshold": 5,
+      "evidence_note": "Supplier quotes and three demand cases"
+    },
+    {
+      "category": "Delivery",
+      "criterion": "The team can source, fill, and support the launch",
+      "weight": 10,
+      "score": 6,
+      "evidence_strength": 1,
+      "must_pass": false,
+      "threshold": 5,
+      "evidence_note": "One supplier qualified; backup not qualified"
+    },
+    {
+      "category": "Learning",
+      "criterion": "The next spend buys evidence on the largest uncertainties",
+      "weight": 10,
+      "score": 8,
+      "evidence_strength": 3,
+      "must_pass": false,
+      "threshold": 6,
+      "evidence_note": "Bounded pilot plan with stop conditions"
+    }
+  ],
+  "cash_flows": [
+    {
+      "scenario": "Downside",
+      "probability": 0.25,
+      "period": 0,
+      "cash_flow": -720000
+    },
+    {
+      "scenario": "Downside",
+      "probability": 0.25,
+      "period": 1,
+      "cash_flow": 80000
+    },
+    {
+      "scenario": "Downside",
+      "probability": 0.25,
+      "period": 2,
+      "cash_flow": 170000
+    },
+    {
+      "scenario": "Downside",
+      "probability": 0.25,
+      "period": 3,
+      "cash_flow": 210000
+    },
+    {
+      "scenario": "Downside",
+      "probability": 0.25,
+      "period": 4,
+      "cash_flow": 190000
+    },
+    {
+      "scenario": "Base",
+      "probability": 0.5,
+      "period": 0,
+      "cash_flow": -720000
+    },
+    {
+      "scenario": "Base",
+      "probability": 0.5,
+      "period": 1,
+      "cash_flow": 170000
+    },
+    {
+      "scenario": "Base",
+      "probability": 0.5,
+      "period": 2,
+      "cash_flow": 320000
+    },
+    {
+      "scenario": "Base",
+      "probability": 0.5,
+      "period": 3,
+      "cash_flow": 410000
+    },
+    {
+      "scenario": "Base",
+      "probability": 0.5,
+      "period": 4,
+      "cash_flow": 350000
+    },
+    {
+      "scenario": "Upside",
+      "probability": 0.25,
+      "period": 0,
+      "cash_flow": -720000
+    },
+    {
+      "scenario": "Upside",
+      "probability": 0.25,
+      "period": 1,
+      "cash_flow": 260000
+    },
+    {
+      "scenario": "Upside",
+      "probability": 0.25,
+      "period": 2,
+      "cash_flow": 470000
+    },
+    {
+      "scenario": "Upside",
+      "probability": 0.25,
+      "period": 3,
+      "cash_flow": 620000
+    },
+    {
+      "scenario": "Upside",
+      "probability": 0.25,
+      "period": 4,
+      "cash_flow": 500000
+    }
+  ],
+  "volume_bridge": [
+    {
+      "scenario": "Downside",
+      "market_size": 180000,
+      "awareness_rate": 0.28,
+      "availability_rate": 0.45,
+      "trial_rate": 0.1,
+      "repeat_rate": 0.3,
+      "additional_units_per_repeater": 1.2,
+      "unit_contribution": 54.0
+    },
+    {
+      "scenario": "Base",
+      "market_size": 180000,
+      "awareness_rate": 0.42,
+      "availability_rate": 0.6,
+      "trial_rate": 0.16,
+      "repeat_rate": 0.42,
+      "additional_units_per_repeater": 1.5,
+      "unit_contribution": 58.0
+    },
+    {
+      "scenario": "Upside",
+      "market_size": 180000,
+      "awareness_rate": 0.55,
+      "availability_rate": 0.72,
+      "trial_rate": 0.22,
+      "repeat_rate": 0.52,
+      "additional_units_per_repeater": 1.8,
+      "unit_contribution": 61.0
+    }
+  ],
+  "risks": [
+    {
+      "risk": "Concentrate damages a surface when instructions are ignored",
+      "owner": "Product lead",
+      "probability": 2,
+      "impact": 5,
+      "evidence_strength": 1,
+      "mitigation": "Compatibility tests, clear exclusions, and packaging review",
+      "trigger": "Any severe pilot incident or repeated minor pattern",
+      "response": "Pause affected use case, investigate, and revise formula or instructions"
+    },
+    {
+      "risk": "Single cap supplier cannot hold metering tolerance",
+      "owner": "Operations lead",
+      "probability": 3,
+      "impact": 4,
+      "evidence_strength": 2,
+      "mitigation": "Tighten acceptance specification and qualify a second supplier",
+      "trigger": "",
+      "response": "Move volume to backup tooling and narrow supported concentrates"
+    },
+    {
+      "risk": "Retail placement produces less availability than planned",
+      "owner": "Commercial lead",
+      "probability": 3,
+      "impact": 3,
+      "evidence_strength": 1,
+      "mitigation": "Run a limited channel pilot before national commitments",
+      "trigger": "Four-week weighted availability remains below 45%",
+      "response": "Shift launch volume to direct and specialist channels"
+    },
+    {
+      "risk": "Repeat use is weaker than stated concept interest",
+      "owner": "Insights lead",
+      "probability": 3,
+      "impact": 4,
+      "evidence_strength": 1,
+      "mitigation": "Measure observed reuse and refill orders in the pilot",
+      "trigger": "Eight-week repeat rate remains below 28%",
+      "response": "Stop expansion and diagnose product experience before redesign"
+    }
+  ],
+  "challenge": [
+    {
+      "check": "A relevant outside-view base rate has been documented",
+      "completed": true,
+      "note": "Compared with three recent refill launches available to the team"
+    },
+    {
+      "check": "Evidence that could disconfirm the case has been recorded",
+      "completed": true,
+      "note": "Key counter-case: customers may prefer ready-to-use formats"
+    },
+    {
+      "check": "Past spending has been excluded from the forward decision",
+      "completed": true,
+      "note": "All values use future cash flows only"
+    },
+    {
+      "check": "A reviewer without delivery ownership has challenged the case",
+      "completed": false,
+      "note": "Independent operations reviewer is scheduled"
+    },
+    {
+      "check": "Every material forecast has a named assumption owner",
+      "completed": true,
+      "note": "Owners named in the assumptions file"
+    },
+    {
+      "check": "The next commitment is bounded by a measurable learning milestone",
+      "completed": true,
+      "note": "Pilot budget and stop conditions drafted"
+    }
+  ]
+}

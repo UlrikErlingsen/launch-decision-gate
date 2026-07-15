@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="GateSignal mark">
+  <rect width="128" height="128" rx="30" fill="#173C3A"/>
+  <path d="M32 96V38h34v58" fill="none" stroke="#F8F5ED" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M26 100L54 72l16 14 32-48" fill="none" stroke="#83D2B4" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="102" cy="38" r="10" fill="#D95B40"/>
+  <circle cx="54" cy="72" r="7" fill="#F2C66D"/>
+</svg>

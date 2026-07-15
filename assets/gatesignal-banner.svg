@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 300" role="img" aria-label="GateSignal - know when the evidence deserves the next investment">
+  <rect width="1200" height="300" rx="32" fill="#F8F5ED"/>
+  <circle cx="1095" cy="-15" r="190" fill="#D95B40" opacity=".12"/>
+  <circle cx="1135" cy="285" r="145" fill="#F2C66D" opacity=".18"/>
+  <g transform="translate(75 72) scale(1.22)">
+    <rect width="128" height="128" rx="30" fill="#173C3A"/>
+    <path d="M32 96V38h34v58" fill="none" stroke="#F8F5ED" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M26 100L54 72l16 14 32-48" fill="none" stroke="#83D2B4" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="102" cy="38" r="10" fill="#D95B40"/>
+    <circle cx="54" cy="72" r="7" fill="#F2C66D"/>
+  </g>
+  <text x="275" y="132" font-family="Arial, Helvetica, sans-serif" font-size="70" font-weight="800" fill="#17322E" letter-spacing="-3">Gate<tspan fill="#D95B40">Signal</tspan></text>
+  <text x="280" y="185" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="600" fill="#47645E">Know when the evidence deserves the next investment.</text>
+  <text x="280" y="224" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="700" fill="#6B7F7A" letter-spacing="2">LOCAL-FIRST  ·  TRACEABLE  ·  OPEN SOURCE</text>
+</svg>
