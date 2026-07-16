@@ -1,11 +1,16 @@
-"""Tests for the ChoiceSignal trial-intention import."""
+"""Tests for the ChoiceSignal trial-intention and PriceSignal price-evidence imports."""
 
 import json
 
 import pytest
 
 from gatesignal.errors import DataProblem
-from gatesignal.interop import TRIAL_INTENTION_SCHEMA, read_trial_intention
+from gatesignal.interop import (
+    PRICE_EVIDENCE_SCHEMA,
+    TRIAL_INTENTION_SCHEMA,
+    read_price_evidence,
+    read_trial_intention,
+)
 
 
 def _payload(**overrides):
@@ -65,3 +70,68 @@ def test_unreadable_and_empty_inputs_are_rejected():
         read_trial_intention(b"not json at all")
     with pytest.raises(DataProblem):
         read_trial_intention(_encode(_payload(respondents=0)))
+
+
+def _price_payload(**overrides):
+    payload = {
+        "schema": PRICE_EVIDENCE_SCHEMA,
+        "producer": {"product": "PriceSignal", "version": "1.0.0"},
+        "evidence_tier": "Observed transactions",
+        "candidate_price": 129.0,
+        "reference_price": 119.0,
+        "declared_unit_cost": 41.5,
+        "candidate_projected_volume": 5400.0,
+        "candidate_contribution": 472500.0,
+        "incremental_contribution": 31800.0,
+        "incremental_contribution_interval": [12400.0, 51200.0],
+        "within_observed_support": True,
+        "decision_status": "Supported",
+        "interpretation": "The candidate price outperforms the reference within the observed range.",
+        "warning": "An aggregate price scenario is one input to a launch decision, not a launch approval.",
+    }
+    payload.update(overrides)
+    return payload
+
+
+def test_valid_price_evidence_round_trips():
+    result = read_price_evidence(_encode(_price_payload()))
+    assert result["candidate_price"] == pytest.approx(129.0)
+    assert result["reference_price"] == pytest.approx(119.0)
+    assert result["candidate_projected_volume"] == pytest.approx(5400.0)
+    assert result["incremental_contribution"] == pytest.approx(31800.0)
+    assert result["incremental_contribution_interval"] == pytest.approx([12400.0, 51200.0])
+    assert result["within_observed_support"] is True
+    assert result["evidence_tier"] == "Observed transactions"
+    assert result["decision_status"] == "Supported"
+    assert result["source_product"] == "PriceSignal"
+    assert result["source_version"] == "1.0.0"
+
+
+def test_price_evidence_wrong_schema_is_rejected():
+    with pytest.raises(DataProblem, match="price-evidence"):
+        read_price_evidence(_encode(_price_payload(schema="signal.trial-intention.v1")))
+
+
+def test_price_evidence_malformed_interval_is_rejected():
+    with pytest.raises(DataProblem, match="two-number"):
+        read_price_evidence(_encode(_price_payload(incremental_contribution_interval=[12400.0])))
+    with pytest.raises(DataProblem, match="two-number"):
+        read_price_evidence(_encode(_price_payload(incremental_contribution_interval=["low", "high"])))
+    with pytest.raises(DataProblem, match="reversed"):
+        read_price_evidence(_encode(_price_payload(incremental_contribution_interval=[51200.0, 12400.0])))
+
+
+def test_price_evidence_negative_price_is_rejected():
+    with pytest.raises(DataProblem, match="greater than zero"):
+        read_price_evidence(_encode(_price_payload(candidate_price=-5.0)))
+    with pytest.raises(DataProblem, match="greater than zero"):
+        read_price_evidence(_encode(_price_payload(candidate_price=0.0)))
+
+
+def test_price_evidence_unit_margin_arithmetic():
+    result = read_price_evidence(_encode(_price_payload()))
+    assert result["unit_margin"] == pytest.approx(129.0 - 41.5)
+    zero_cost = read_price_evidence(_encode(_price_payload(declared_unit_cost=0.0)))
+    assert zero_cost["unit_margin"] == pytest.approx(129.0)
+    with pytest.raises(DataProblem, match="cannot be negative"):
+        read_price_evidence(_encode(_price_payload(declared_unit_cost=-1.0)))

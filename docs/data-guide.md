@@ -58,6 +58,24 @@ Each scenario is unique. `market_size`, `additional_units_per_repeater`, and `un
 | `trigger` | Observable condition for escalation or response |
 | `response` | Action if the trigger occurs |
 
+## Brand evidence
+
+The `Brand evidence` sheet contains one row per extension/alliance claim or risk.
+
+| Column | Type and boundary |
+|---|---|
+| `domain` | Fit, transfer, dilution, control, disclosure, activism, reputation, or another explicit domain |
+| `claim_or_risk` | Unique, decision-specific statement |
+| `evidence_direction` | `Supports`, `Neutral / mixed`, `Raises concern`, or `Not assessed` |
+| `evidence_strength` | Ordinal 0–3 |
+| `materiality` | Ordinal 1–5 |
+| `must_resolve` | Yes/no; use sparingly for genuinely non-compensatory exposures |
+| `owner` | Accountable evidence/risk owner |
+| `evidence_note` | Source, result, scope, and limitation |
+| `next_test` | Observable next evidence or governance action |
+
+Adapt the statements to the actual focal brand, category, partner, market, disclosure regime, and stakeholder context. If no extension or alliance is involved, preserve the section as not applicable in the decision rationale rather than inventing supportive evidence.
+
 ## Challenge
 
 `check` must be unique, `completed` accepts yes/no or true/false, and `note` records the challenge evidence. Teams may adapt the checklist to their governance context.
@@ -65,4 +83,3 @@ Each scenario is unique. `market_size`, `additional_units_per_repeater`, and `un
 ## Safety limits
 
 GateSignal accepts only `.xlsx` and `.json`; it does not execute macros or embedded code. Uploads default to a 50 MB limit, workbooks may not expand beyond 100 MB, and each analytical table is limited to 20,000 rows. Spreadsheet exports neutralize text beginning with `=`, `+`, `-`, or `@` to reduce formula-injection risk.
-

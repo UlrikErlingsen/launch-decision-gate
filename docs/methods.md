@@ -68,17 +68,26 @@ Probability and impact are ordinal 1–5 ratings. Their product creates four tri
 
 A high or critical risk is response-ready only when it has all four fields: owner, mitigation, observable trigger, and executable response. “Response-ready” does not mean controlled or acceptable; it means the contingency is documented for review.
 
+## Brand-extension and alliance evidence
+
+The brand evidence register keeps eight questions visible: category fit, image/value fit, transfer asymmetry, dilution/confusion, control and exit rights, disclosure, activism congruence, and reputation spillover. Each row records direction (`Supports`, `Neutral / mixed`, `Raises concern`, or `Not assessed`), evidence strength 0–3, materiality 1–5, whether it must be resolved, an owner, a source/limitation note, and a next test.
+
+Materiality-weighted evidence coverage is `sum(materiality × evidence_strength / 3) / sum(materiality)`. It is a documentation indicator, not a brand-fit score or success probability. A must-resolve row blocks when evidence is weak/unassessed or raises concern. A material concern also blocks when no owner and next test are documented. These transparent rules keep a persuasive overall case from hiding dilution, partner-control, disclosure, activism, or reputation exposure.
+
+Public brand-extension research motivates testing perceived fit and potential feedback to the parent brand; brand-alliance research motivates reciprocal spillover and asymmetry checks. Brand-activism research motivates checking alignment between claims, practice, stakeholders, and partner conduct. GateSignal turns these into original audit prompts and does not reproduce a proprietary brand model.
+
 ## Decision disposition
 
 GateSignal applies conservative rules in this order:
 
 1. failed must-pass gate → **Rework or stop**;
 2. weighted score below 5 → **Stop or redesign**;
-3. negative reference and expected NPV → **Rework economics**;
-4. untreated high or critical risk → **Hold for risk response**;
-5. evidence coverage below 60% → **Hold for evidence**;
-6. fewer than two-thirds of challenge checks complete → **Hold for challenge**;
-7. otherwise → **Consider go**.
+3. unresolved declared brand blocker → **Hold for brand evidence**;
+4. negative reference and expected NPV → **Rework economics**;
+5. untreated high or critical risk → **Hold for risk response**;
+6. evidence coverage below 60% → **Hold for evidence**;
+7. fewer than two-thirds of challenge checks complete → **Hold for challenge**;
+8. otherwise → **Consider go**.
 
 These are transparent defaults, not empirically calibrated decision thresholds. The user can record a different management decision, rationale, funding limit, learning milestone, and review date in the export. Accountability never transfers to the software.
 
@@ -93,4 +102,3 @@ These are transparent defaults, not empirically calibrated decision thresholds. 
 - No model result substitutes for legal, safety, financial, technical, customer, or ethical review.
 
 The implementation intentionally exposes these limits rather than hiding them behind a single “go score.”
-

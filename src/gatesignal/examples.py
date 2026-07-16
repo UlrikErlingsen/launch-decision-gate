@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import pandas as pd
 
+from .brand import BRAND_EVIDENCE_COLUMNS
 from .finance import CASH_FLOW_COLUMNS, VOLUME_COLUMNS
 from .risk import CHALLENGE_COLUMNS, RISK_COLUMNS
 from .scoring import CRITERIA_COLUMNS
@@ -22,6 +23,21 @@ def default_challenge() -> pd.DataFrame:
         ],
         columns=CHALLENGE_COLUMNS,
     )
+
+
+def blank_brand_evidence() -> pd.DataFrame:
+    """Return independent prompts spanning extension, alliance, disclosure, and reputation risk."""
+    rows = [
+        ["Category fit", "The proposed category use is credible for the focal brand", "Not assessed", 0, 5, False, "", "", ""],
+        ["Image and value fit", "Brand meanings and customer expectations fit the offer or partner", "Not assessed", 0, 4, False, "", "", ""],
+        ["Transfer asymmetry", "Positive associations transfer in both directions without one party carrying most downside", "Not assessed", 0, 4, False, "", "", ""],
+        ["Dilution and confusion", "The extension or alliance will not blur, weaken, or contradict core brand meaning", "Not assessed", 0, 5, False, "", "", ""],
+        ["Control and governance", "Rights, quality control, exit, data use, and incident authority are explicit", "Not assessed", 0, 5, False, "", "", ""],
+        ["Disclosure", "Customers can recognize the commercial relationship and material claims", "Not assessed", 0, 4, False, "", "", ""],
+        ["Activism", "Public positions are congruent with behavior, stakeholder expectations, and partner conduct", "Not assessed", 0, 4, False, "", "", ""],
+        ["Reputation spillover", "Partner, category, and controversy spillovers have an owned response and exit path", "Not assessed", 0, 5, False, "", "", ""],
+    ]
+    return pd.DataFrame(rows, columns=BRAND_EVIDENCE_COLUMNS)
 
 
 def blank_project() -> dict[str, object]:
@@ -59,6 +75,7 @@ def blank_project() -> dict[str, object]:
             [["Describe the most material uncertainty", "", 3, 3, 0, "", "", ""]],
             columns=RISK_COLUMNS,
         ),
+        "brand_evidence": blank_brand_evidence(),
         "challenge": default_challenge(),
     }
 
@@ -154,6 +171,20 @@ def demo_project() -> dict[str, object]:
         "Pilot budget and stop conditions drafted",
     ]
 
+    brand_evidence = pd.DataFrame(
+        [
+            ["Category fit", "The home-care category use is credible for the focal brand", "Supports", 2, 5, False, "Brand lead", "Fictional concept interviews and portfolio review", "Confirm fit in a pre-specified concept comparison"],
+            ["Image and value fit", "Refill behavior fits the brand's convenience and waste-reduction meanings", "Supports", 2, 4, False, "Insights lead", "Fictional qualitative pattern; no market claim", "Quantify fit and relevance in the pilot sample"],
+            ["Transfer asymmetry", "The cap supplier gains visibility while the focal brand carries most customer downside", "Raises concern", 2, 4, False, "Partnership lead", "Responsibility mapping identifies asymmetric customer exposure", "Negotiate reciprocal warranties and incident obligations"],
+            ["Dilution and confusion", "The system will not weaken the brand through complexity or unsafe-use confusion", "Neutral / mixed", 2, 5, False, "Brand lead", "Instructions tested only in a small fictional prototype review", "Run comprehension and brand-feedback checks after extended use"],
+            ["Control and governance", "Quality control, incident authority, data use, and exit rights are explicit", "Supports", 2, 5, False, "Legal lead", "Draft supplier quality agreement and escalation map", "Close remaining exit and recall clauses before pilot"],
+            ["Disclosure", "Customers can identify the system relationship and material environmental claims", "Supports", 3, 4, False, "Compliance lead", "Draft packaging disclosure and claim substantiation file", "Verify recognition and comprehension in label testing"],
+            ["Activism", "Waste-reduction communication is congruent with operating behavior and partner conduct", "Neutral / mixed", 2, 4, False, "Sustainability lead", "Claim inventory linked to fictional operating assumptions", "Independent review of claims and supplier conduct"],
+            ["Reputation spillover", "Supplier or product incidents have an owned communication and exit path", "Supports", 2, 5, False, "Communications lead", "Draft incident roles and holding statements", "Tabletop test the escalation and exit process"],
+        ],
+        columns=BRAND_EVIDENCE_COLUMNS,
+    )
+
     return {
         "metadata": {
             "project_name": "LoopDose cleaning concentrate system",
@@ -167,5 +198,6 @@ def demo_project() -> dict[str, object]:
         "cash_flows": pd.DataFrame(cash_rows, columns=CASH_FLOW_COLUMNS),
         "volume_bridge": volume,
         "risks": risks,
+        "brand_evidence": brand_evidence,
         "challenge": challenge,
     }

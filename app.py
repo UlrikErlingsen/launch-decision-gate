@@ -22,11 +22,12 @@ ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT / "src"))
 
 from gatesignal import __version__
+from gatesignal.brand import BRAND_EVIDENCE_DIRECTIONS, analyze_brand_evidence
 from gatesignal.decision import build_decision_brief
 from gatesignal.errors import DataProblem, friendly_message
 from gatesignal.examples import blank_project, demo_project
 from gatesignal.finance import analyze_cash_flows, analyze_volume_bridge
-from gatesignal.interop import read_trial_intention
+from gatesignal.interop import read_price_evidence, read_trial_intention
 from gatesignal.io import (
     load_project,
     project_template,
@@ -221,7 +222,10 @@ def copy_project(project: dict[str, object]) -> dict[str, object]:
 
 def set_project(project: dict[str, object]) -> None:
     st.session_state["project"] = copy_project(project)
-    for key in ["gate_summary", "finance_summary", "volume_results", "risk_summary", "challenge_score", "decision_brief"]:
+    for key in [
+        "gate_summary", "finance_summary", "volume_results", "risk_summary", "brand_summary",
+        "challenge_score", "decision_brief",
+    ]:
         st.session_state.pop(key, None)
     st.session_state["project_epoch"] = int(st.session_state.get("project_epoch", 0)) + 1
 
@@ -231,6 +235,7 @@ def invalidate_from(section: str) -> None:
         "criteria": ["gate_summary", "decision_brief"],
         "economics": ["finance_summary", "volume_results", "decision_brief"],
         "risk": ["risk_summary", "challenge_score", "decision_brief"],
+        "brand": ["brand_summary", "decision_brief"],
     }
     for key in mapping[section]:
         st.session_state.pop(key, None)
@@ -255,7 +260,8 @@ def masthead() -> None:
 
 def footer() -> None:
     st.markdown(
-        f'<div class="gs-footer">GateSignal {__version__}<span>•</span>Decision support, not delegated judgment<span>•</span>AGPL-3.0-or-later</div>',
+        f'<div class="gs-footer">GateSignal v{__version__} <span>◆</span> structured evidence, not automated '
+        "approval <span>◆</span> Part of the Signal suite <span>◆</span> AGPL-3.0-or-later</div>",
         unsafe_allow_html=True,
     )
 
@@ -363,22 +369,24 @@ def risk_figure(summary) -> go.Figure:
     return figure
 
 
-def build_all_summaries() -> tuple[object, object, pd.DataFrame, object, float, object]:
+def build_all_summaries() -> tuple[object, object, pd.DataFrame, object, object, float, object]:
     project = st.session_state["project"]
     metadata = project["metadata"]
     gate = score_gate(project["criteria"])
     finance = analyze_cash_flows(project["cash_flows"], float(metadata.get("discount_rate", 0.12)))
     volume = analyze_volume_bridge(project["volume_bridge"])
     risks = analyze_risks(project["risks"])
+    brand = analyze_brand_evidence(project["brand_evidence"])
     challenge = challenge_completion(project["challenge"])
-    brief = build_decision_brief(gate, finance, risks, challenge)
+    brief = build_decision_brief(gate, finance, risks, challenge, brand=brand)
     st.session_state["gate_summary"] = gate
     st.session_state["finance_summary"] = finance
     st.session_state["volume_results"] = volume
     st.session_state["risk_summary"] = risks
+    st.session_state["brand_summary"] = brand
     st.session_state["challenge_score"] = challenge
     st.session_state["decision_brief"] = brief
-    return gate, finance, volume, risks, challenge, brief
+    return gate, finance, volume, risks, brand, challenge, brief
 
 
 for key, default in (
@@ -448,7 +456,7 @@ with st.sidebar:
     st.caption(f"Current project: **{project_name}**")
     st.markdown("### Follow the review")
     page = st.radio(
-        "Page",
+        "Navigate",
         PAGES,
         index=PAGES.index(st.session_state["nav_target"]),
         key=f"nav_radio_{st.session_state['nav_epoch']}",
@@ -662,6 +670,73 @@ elif page == "2 · Economics & scenarios":
                             st.rerun()
             if metadata.get("trial_intention_import"):
                 st.caption(f"Imported: {metadata['trial_intention_import']}. Recorded in the project metadata and exports.")
+        with st.expander("Import price evidence from PriceSignal"):
+            st.caption(
+                "PriceSignal exports a price-evidence JSON (schema `signal.price-evidence.v1`). "
+                "Import it here to ground a scenario's unit contribution in the tested candidate price "
+                "minus its declared unit cost — the number stays an assumption, and the pricing "
+                "caveats travel with it. The market size is your population and is left untouched."
+            )
+            price_file = st.file_uploader(
+                "PriceSignal price-evidence JSON",
+                type=["json"],
+                key=f"price_evidence_{st.session_state['project_epoch']}",
+            )
+            if price_file is not None:
+                try:
+                    evidence = read_price_evidence(price_file.getvalue())
+                except Exception as exc:
+                    show_error(exc)
+                else:
+                    interval_low, interval_high = evidence["incremental_contribution_interval"]
+                    st.info(
+                        f"Candidate price **{evidence['candidate_price']:,.2f}** vs reference "
+                        f"**{evidence['reference_price']:,.2f}** "
+                        f"({evidence['source_product']} {evidence['source_version']}). "
+                        f"Unit margin **{evidence['unit_margin']:,.2f}** "
+                        f"(candidate price − declared unit cost {evidence['declared_unit_cost']:,.2f}); "
+                        f"projected volume **{evidence['candidate_projected_volume']:,.0f}**; "
+                        f"incremental contribution **{evidence['incremental_contribution']:,.0f}** "
+                        f"(interval {interval_low:,.0f} to {interval_high:,.0f}). "
+                        f"Evidence tier: {evidence['evidence_tier']}."
+                    )
+                    st.caption(
+                        f"PriceSignal status: **{evidence['decision_status']}** — {evidence['interpretation']}"
+                    )
+                    if not evidence["within_observed_support"]:
+                        st.warning(
+                            "The candidate price sits outside observed evidence support; "
+                            "treat the projection as extrapolation."
+                        )
+                    scenario_names = [
+                        str(name).strip()
+                        for name in project["volume_bridge"]["scenario"].tolist()
+                        if str(name).strip()
+                    ]
+                    if not scenario_names:
+                        st.warning("Add at least one named volume scenario above before applying the import.")
+                    else:
+                        apply_columns = st.columns([3, 1])
+                        chosen_scenario = apply_columns[0].selectbox(
+                            "Apply unit margin to scenario", scenario_names, key="price_evidence_scenario"
+                        )
+                        if apply_columns[1].button("Apply", key="apply_price_evidence"):
+                            bridge = project["volume_bridge"].copy(deep=True)
+                            mask = bridge["scenario"].astype(str).str.strip() == chosen_scenario
+                            bridge.loc[mask, "unit_contribution"] = evidence["unit_margin"]
+                            project["volume_bridge"] = bridge
+                            metadata["price_evidence_import"] = (
+                                f"candidate price {evidence['candidate_price']:.2f} − unit cost "
+                                f"{evidence['declared_unit_cost']:.2f} · "
+                                f"{evidence['source_product']} {evidence['source_version']} · "
+                                f"tier {evidence['evidence_tier']} · status {evidence['decision_status']} · "
+                                f"applied unit margin {evidence['unit_margin']:.2f} to ‘{chosen_scenario}’"
+                            )
+                            invalidate_from("economics")
+                            st.session_state["project_epoch"] = int(st.session_state["project_epoch"]) + 1
+                            st.rerun()
+            if metadata.get("price_evidence_import"):
+                st.caption(f"Imported: {metadata['price_evidence_import']}. Recorded in the project metadata and exports.")
     with cash_tab:
         st.caption("Enter incremental future project cash flows only. Period 0 normally contains the next investment as a negative number.")
         edited_cash = full_width(
@@ -713,7 +788,9 @@ elif page == "2 · Economics & scenarios":
 elif page == "3 · Risks & contingencies":
     st.title("Turn uncertainty into owned responses")
     st.caption("The 1–5 ratings are ordinal triage. They prioritize discussion; they are not calibrated event probabilities or expected losses.")
-    risk_tab, challenge_tab = st.tabs(["Risk register", "Independent challenge"])
+    risk_tab, brand_tab, challenge_tab = st.tabs(
+        ["Risk register", "Brand extension & alliance", "Independent challenge"]
+    )
     with risk_tab:
         edited_risks = full_width(
             st.data_editor,
@@ -730,6 +807,31 @@ elif page == "3 · Risks & contingencies":
         if not edited_risks.equals(project["risks"]):
             project["risks"] = edited_risks
             invalidate_from("risk")
+    with brand_tab:
+        st.caption(
+            "Use this section when a concept extends a brand, borrows another party's associations, uses a commercial "
+            "alliance, or could create reputation spillovers. Evidence strength is 0–3; materiality is ordinal 1–5."
+        )
+        edited_brand = full_width(
+            st.data_editor,
+            project["brand_evidence"],
+            key=f"brand_editor_{st.session_state['project_epoch']}",
+            num_rows="dynamic",
+            hide_index=True,
+            column_config={
+                "evidence_direction": st.column_config.SelectboxColumn(options=BRAND_EVIDENCE_DIRECTIONS),
+                "evidence_strength": st.column_config.NumberColumn(min_value=0, max_value=3, step=1, format="%d"),
+                "materiality": st.column_config.NumberColumn(min_value=1, max_value=5, step=1, format="%d"),
+                "must_resolve": st.column_config.CheckboxColumn(),
+            },
+        )
+        if not edited_brand.equals(project["brand_evidence"]):
+            project["brand_evidence"] = edited_brand
+            invalidate_from("brand")
+        st.info(
+            "The audit covers category/image fit, transfer asymmetry, dilution, control and exit rights, disclosure, "
+            "activism congruence, and reputation spillover. It does not produce a universal brand-fit score."
+        )
     with challenge_tab:
         st.caption("A checked box needs a note that lets another reviewer understand what was actually done.")
         edited_challenge = full_width(
@@ -743,16 +845,18 @@ elif page == "3 · Risks & contingencies":
         if not edited_challenge.equals(project["challenge"]):
             project["challenge"] = edited_challenge
             invalidate_from("risk")
-    if st.button("Review risks & contingencies", type="primary", key="analyze_risk"):
+    if st.button("Review risks, brand evidence & contingencies", type="primary", key="analyze_risk"):
         try:
             st.session_state["risk_summary"] = analyze_risks(project["risks"])
+            st.session_state["brand_summary"] = analyze_brand_evidence(project["brand_evidence"])
             st.session_state["challenge_score"] = challenge_completion(project["challenge"])
             st.session_state.pop("decision_brief", None)
         except Exception as exc:
             show_error(exc)
     risks = st.session_state.get("risk_summary")
+    brand = st.session_state.get("brand_summary")
     challenge = st.session_state.get("challenge_score")
-    if risks is not None and challenge is not None:
+    if risks is not None and brand is not None and challenge is not None:
         metrics = st.columns(4)
         metrics[0].metric("High / critical risks", risks.high_or_critical)
         metrics[1].metric("Without complete response", risks.untreated_high_or_critical)
@@ -763,6 +867,23 @@ elif page == "3 · Risks & contingencies":
         full_width(st.plotly_chart, risk_figure(risks))
         with st.expander("Preparedness table", expanded=True):
             full_width(st.dataframe, risks.risks, hide_index=True)
+        st.markdown("### Brand extension & alliance evidence")
+        brand_metrics = st.columns(4)
+        brand_metrics[0].metric("Evidence status", brand.status)
+        brand_metrics[1].metric("Evidence coverage", f"{brand.evidence_coverage:.0%}")
+        brand_metrics[2].metric("Material concerns", brand.material_concerns)
+        brand_metrics[3].metric("Blocking items", len(brand.blocking_items))
+        if brand.blocking_items:
+            st.error("Unresolved brand evidence blockers: " + "; ".join(brand.blocking_items) + ".")
+        elif brand.status == "BRAND EVIDENCE INCOMPLETE":
+            st.warning("Brand evidence is incomplete. Preserve the gaps rather than inferring fit from absence of concern.")
+        else:
+            st.info("Brand evidence remains conditional on the declared scope, sources, partners, claims, and response plans.")
+        with st.expander("Brand evidence audit and gaps", expanded=bool(brand.blocking_items)):
+            full_width(st.dataframe, brand.evidence, hide_index=True)
+            if not brand.evidence_gaps.empty:
+                st.markdown("**Weak, unassessed, or blocking evidence**")
+                full_width(st.dataframe, brand.evidence_gaps, hide_index=True)
 
 
 elif page == "4 · Decision & export":
@@ -775,7 +896,7 @@ elif page == "4 · Decision & export":
             show_error(exc)
     brief = st.session_state.get("decision_brief")
     if brief is None:
-        st.info("Build the brief when the criteria, economics, risks, and challenge record are ready.")
+        st.info("Build the brief when the criteria, economics, risks, brand evidence, and challenge record are ready.")
     else:
         st.markdown(
             f"<div class='gs-decision'><b>MODEL DISPOSITION</b><h2>{brief.disposition}</h2><p>{brief.headline}</p></div>",
@@ -813,6 +934,7 @@ elif page == "4 · Decision & export":
         finance = st.session_state["finance_summary"]
         volume = st.session_state["volume_results"]
         risks = st.session_state["risk_summary"]
+        brand = st.session_state["brand_summary"]
         challenge_frame = prepare_challenge(project["challenge"])
         source_fingerprint = hashlib.sha256(
             project_template(project)
@@ -829,6 +951,8 @@ elif page == "4 · Decision & export":
             "decision_status": "Decision support; accountable management judgment required.",
             "score_status": "Weighted preference score; not a probability of success.",
             "risk_status": "Ordinal triage; not calibrated probability or expected loss.",
+            "brand_evidence_status": brand.status,
+            "brand_evidence_note": "Conditional evidence audit; not a universal brand-fit or reputation score.",
         }
         brief_table = pd.DataFrame(
             [
@@ -850,6 +974,8 @@ elif page == "4 · Decision & export":
             "Cash flows": finance.cash_flows,
             "Volume bridge": volume,
             "Risk register": risks.risks,
+            "Brand evidence": brand.evidence,
+            "Brand evidence gaps": brand.evidence_gaps,
             "Challenge": challenge_frame,
         }
         safe_name = "".join(character if character.isalnum() else "-" for character in project_name.lower()).strip("-") or "project"
@@ -884,13 +1010,14 @@ else:
         st.markdown(
             """
             GateSignal uses a **decision-gate architecture**, not a proprietary workflow template. Work creates evidence;
-            a review point decides whether to commit the next bounded resources. The app keeps five objects separate:
+            a review point decides whether to commit the next bounded resources. The app keeps six objects separate:
 
             1. declared preferences and hard constraints;
             2. evidence strength;
             3. conditional scenario economics;
-            4. ordinal risk preparedness; and
-            5. the accountable management decision.
+            4. ordinal risk preparedness;
+            5. brand-extension/alliance evidence and blockers; and
+            6. the accountable management decision.
 
             This separation prevents a high average from concealing a failed safety or feasibility constraint and prevents
             weak evidence from being converted into a fake probability of success.

@@ -45,6 +45,8 @@ def test_analysis_flow_produces_conservative_decision() -> None:
     at.radio[0].set_value("3 · Risks & contingencies").run()
     at.button(key="analyze_risk").click().run()
     assert "risk_summary" in at.session_state
+    assert "brand_summary" in at.session_state
+    assert at.session_state["brand_summary"].status == "CONDITIONAL BRAND SUPPORT"
 
     at.radio[0].set_value("4 · Decision & export").run()
     at.button(key="build_decision").click().run()

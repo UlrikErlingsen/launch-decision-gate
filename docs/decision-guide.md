@@ -20,8 +20,9 @@ Read the evidence in this order:
 3. downside, reference, and upside economics;
 4. forecast-assumption bridge;
 5. untreated high and critical risks;
-6. disconfirming evidence and outside-view comparison; and
-7. the next bounded learning milestone.
+6. brand-extension/alliance fit, transfer, dilution, control, disclosure, activism, and reputation blockers;
+7. disconfirming evidence and outside-view comparison; and
+8. the next bounded learning milestone.
 
 The decimal score should never become the agenda. If reviewers disagree, record whether the disagreement concerns the criterion, weight, score, evidence, threshold, forecast, or consequence. Those are different problems.
 
@@ -46,5 +47,5 @@ When uncertainty is large, prefer a reversible next step that attacks the most c
 - Do not treat scenario probability as measured confidence unless it actually comes from a defensible statistical process.
 - Do not offset a failed hard gate with commercial attractiveness.
 - Do not call a mitigation complete without an observable trigger and an executable response.
+- Do not infer brand fit from familiarity alone or let a supportive partner association hide asymmetric downside, weak control rights, dilution, or reputation spillover.
 - Do not accept one project in isolation if it displaces a better portfolio use of scarce people or capital.
-

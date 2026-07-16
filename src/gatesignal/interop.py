@@ -7,6 +7,7 @@ import json
 from .errors import DataProblem
 
 TRIAL_INTENTION_SCHEMA = "signal.trial-intention.v1"
+PRICE_EVIDENCE_SCHEMA = "signal.price-evidence.v1"
 MAX_INTEROP_BYTES = 5 * 1024 * 1024
 
 
@@ -53,4 +54,78 @@ def read_trial_intention(raw: bytes) -> dict[str, object]:
         "source_product": str(generated_by.get("product", "ChoiceSignal")),
         "source_version": str(generated_by.get("version", "")),
         "note": str(trial.get("note", "")),
+    }
+
+
+def read_price_evidence(raw: bytes) -> dict[str, object]:
+    """Read a PriceSignal price-evidence export (schema ``signal.price-evidence.v1``).
+
+    Returns the candidate and reference prices, the declared unit cost and the
+    derived unit margin (candidate price minus declared unit cost), the projected
+    volume, and the incremental contribution with its interval. The evidence
+    tier, decision status, interpretation, and warning travel along.
+    """
+    if not raw:
+        raise DataProblem("This file is empty.")
+    if len(raw) > MAX_INTEROP_BYTES:
+        raise DataProblem("A price-evidence export should be a small JSON file; this one exceeds 5 MB.")
+    try:
+        payload = json.loads(raw.decode("utf-8-sig"))
+    except Exception as exc:
+        raise DataProblem("This file is not readable JSON. Export it from PriceSignal's evidence page.") from exc
+    if not isinstance(payload, dict) or payload.get("schema") != PRICE_EVIDENCE_SCHEMA:
+        raise DataProblem(
+            "This is not a PriceSignal price-evidence export "
+            f"(expected schema ‘{PRICE_EVIDENCE_SCHEMA}’). Use the GateSignal bridge export "
+            "on PriceSignal's evidence page."
+        )
+    try:
+        candidate_price = float(payload["candidate_price"])
+        reference_price = float(payload["reference_price"])
+        unit_cost = float(payload["declared_unit_cost"])
+        volume = float(payload["candidate_projected_volume"])
+        candidate_contribution = float(payload["candidate_contribution"])
+        incremental = float(payload["incremental_contribution"])
+    except (KeyError, TypeError, ValueError) as exc:
+        raise DataProblem(
+            "The export is missing its price or contribution numbers; re-export it from PriceSignal."
+        ) from exc
+    interval = payload.get("incremental_contribution_interval")
+    if (
+        not isinstance(interval, (list, tuple))
+        or len(interval) != 2
+        or not all(isinstance(edge, (int, float)) and not isinstance(edge, bool) for edge in interval)
+    ):
+        raise DataProblem(
+            "The incremental-contribution interval must be a two-number [low, high] list; "
+            "re-export it from PriceSignal."
+        )
+    low, high = float(interval[0]), float(interval[1])
+    if low > high:
+        raise DataProblem(
+            "The incremental-contribution interval is reversed (low exceeds high); re-export it from PriceSignal."
+        )
+    if candidate_price <= 0:
+        raise DataProblem("The candidate price in the export must be greater than zero.")
+    if unit_cost < 0:
+        raise DataProblem("The declared unit cost in the export cannot be negative.")
+    if volume < 0:
+        raise DataProblem("The projected volume in the export cannot be negative.")
+    producer = payload.get("producer") if isinstance(payload.get("producer"), dict) else {}
+    return {
+        "candidate_price": candidate_price,
+        "reference_price": reference_price,
+        "declared_unit_cost": unit_cost,
+        "unit_margin": candidate_price - unit_cost,
+        "candidate_projected_volume": volume,
+        "candidate_contribution": candidate_contribution,
+        "incremental_contribution": incremental,
+        "incremental_contribution_interval": [low, high],
+        "within_observed_support": bool(payload.get("within_observed_support", False)),
+        "evidence_tier": str(payload.get("evidence_tier", "")),
+        "decision_status": str(payload.get("decision_status", "")),
+        "interpretation": str(payload.get("interpretation", "")),
+        "warning": str(payload.get("warning", "")),
+        "source_product": str(producer.get("product", "PriceSignal")),
+        "source_version": str(producer.get("version", "")),
     }

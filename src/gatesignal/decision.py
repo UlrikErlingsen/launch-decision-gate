@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from .brand import BrandEvidenceSummary
 from .finance import FinanceSummary
 from .risk import RiskSummary
 from .scoring import GateSummary
@@ -24,6 +25,7 @@ def build_decision_brief(
     finance: FinanceSummary,
     risk: RiskSummary,
     challenge_completion: float,
+    brand: BrandEvidenceSummary | None = None,
 ) -> DecisionBrief:
     """Apply explicit, conservative rules in priority order."""
     reasons = [
@@ -33,6 +35,13 @@ def build_decision_brief(
         f"Untreated high or critical risks: {risk.untreated_high_or_critical}.",
         f"Independent challenge checks completed: {challenge_completion:.0%}.",
     ]
+    if brand is not None:
+        reasons.extend(
+            [
+                f"Brand-extension/alliance evidence coverage: {brand.evidence_coverage:.0%}.",
+                f"Brand evidence status: {brand.status}.",
+            ]
+        )
     actions: list[str] = []
 
     if gate.must_pass_failures:
@@ -48,6 +57,14 @@ def build_decision_brief(
         return DecisionBrief(
             disposition="STOP OR REDESIGN",
             headline="The current concept scores weakly across the declared decision criteria.",
+            reasons=tuple(reasons),
+            required_actions=tuple(actions),
+        )
+    if brand is not None and brand.blocking_items:
+        actions.extend(f"Resolve the brand evidence blocker: {item}." for item in brand.blocking_items)
+        return DecisionBrief(
+            disposition="HOLD FOR BRAND EVIDENCE",
+            headline="A declared brand-extension or alliance exposure remains unresolved.",
             reasons=tuple(reasons),
             required_actions=tuple(actions),
         )

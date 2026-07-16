@@ -20,7 +20,7 @@ MAX_UPLOAD_BYTES = MAX_UPLOAD_MB * 1024 * 1024
 MAX_EXPANDED_WORKBOOK_BYTES = 100 * 1024 * 1024
 MAX_ROWS_PER_TABLE = 20_000
 ILLEGAL_XML_CHARACTERS = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f]")
-TABLE_KEYS = ["criteria", "cash_flows", "volume_bridge", "risks", "challenge"]
+TABLE_KEYS = ["criteria", "cash_flows", "volume_bridge", "risks", "brand_evidence", "challenge"]
 
 
 def _source_bytes(source: str | Path | bytes | BinaryIO) -> tuple[bytes, str]:
@@ -169,6 +169,7 @@ def project_template(project: dict[str, object]) -> bytes:
         "cash_flows": "Cash flows",
         "volume_bridge": "Volume bridge",
         "risks": "Risks",
+        "brand_evidence": "Brand evidence",
         "challenge": "Challenge",
     }
     tables.update({labels[key]: project[key] for key in TABLE_KEYS if isinstance(project.get(key), pd.DataFrame)})

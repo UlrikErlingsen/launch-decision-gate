@@ -255,6 +255,96 @@
       "response": "Stop expansion and diagnose product experience before redesign"
     }
   ],
+  "brand_evidence": [
+    {
+      "domain": "Category fit",
+      "claim_or_risk": "The home-care category use is credible for the focal brand",
+      "evidence_direction": "Supports",
+      "evidence_strength": 2,
+      "materiality": 5,
+      "must_resolve": false,
+      "owner": "Brand lead",
+      "evidence_note": "Fictional concept interviews and portfolio review",
+      "next_test": "Confirm fit in a pre-specified concept comparison"
+    },
+    {
+      "domain": "Image and value fit",
+      "claim_or_risk": "Refill behavior fits the brand's convenience and waste-reduction meanings",
+      "evidence_direction": "Supports",
+      "evidence_strength": 2,
+      "materiality": 4,
+      "must_resolve": false,
+      "owner": "Insights lead",
+      "evidence_note": "Fictional qualitative pattern; no market claim",
+      "next_test": "Quantify fit and relevance in the pilot sample"
+    },
+    {
+      "domain": "Transfer asymmetry",
+      "claim_or_risk": "The cap supplier gains visibility while the focal brand carries most customer downside",
+      "evidence_direction": "Raises concern",
+      "evidence_strength": 2,
+      "materiality": 4,
+      "must_resolve": false,
+      "owner": "Partnership lead",
+      "evidence_note": "Responsibility mapping identifies asymmetric customer exposure",
+      "next_test": "Negotiate reciprocal warranties and incident obligations"
+    },
+    {
+      "domain": "Dilution and confusion",
+      "claim_or_risk": "The system will not weaken the brand through complexity or unsafe-use confusion",
+      "evidence_direction": "Neutral / mixed",
+      "evidence_strength": 2,
+      "materiality": 5,
+      "must_resolve": false,
+      "owner": "Brand lead",
+      "evidence_note": "Instructions tested only in a small fictional prototype review",
+      "next_test": "Run comprehension and brand-feedback checks after extended use"
+    },
+    {
+      "domain": "Control and governance",
+      "claim_or_risk": "Quality control, incident authority, data use, and exit rights are explicit",
+      "evidence_direction": "Supports",
+      "evidence_strength": 2,
+      "materiality": 5,
+      "must_resolve": false,
+      "owner": "Legal lead",
+      "evidence_note": "Draft supplier quality agreement and escalation map",
+      "next_test": "Close remaining exit and recall clauses before pilot"
+    },
+    {
+      "domain": "Disclosure",
+      "claim_or_risk": "Customers can identify the system relationship and material environmental claims",
+      "evidence_direction": "Supports",
+      "evidence_strength": 3,
+      "materiality": 4,
+      "must_resolve": false,
+      "owner": "Compliance lead",
+      "evidence_note": "Draft packaging disclosure and claim substantiation file",
+      "next_test": "Verify recognition and comprehension in label testing"
+    },
+    {
+      "domain": "Activism",
+      "claim_or_risk": "Waste-reduction communication is congruent with operating behavior and partner conduct",
+      "evidence_direction": "Neutral / mixed",
+      "evidence_strength": 2,
+      "materiality": 4,
+      "must_resolve": false,
+      "owner": "Sustainability lead",
+      "evidence_note": "Claim inventory linked to fictional operating assumptions",
+      "next_test": "Independent review of claims and supplier conduct"
+    },
+    {
+      "domain": "Reputation spillover",
+      "claim_or_risk": "Supplier or product incidents have an owned communication and exit path",
+      "evidence_direction": "Supports",
+      "evidence_strength": 2,
+      "materiality": 5,
+      "must_resolve": false,
+      "owner": "Communications lead",
+      "evidence_note": "Draft incident roles and holding statements",
+      "next_test": "Tabletop test the escalation and exit process"
+    }
+  ],
   "challenge": [
     {
       "check": "A relevant outside-view base rate has been documented",

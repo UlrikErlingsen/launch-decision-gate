@@ -19,6 +19,10 @@ The bundled LoopDose case, HomeCare organization, names, interviews, forecasts, 
 - Silk and Urban (1978) illustrate explicit pre-market measurement and sales-potential modeling; GateSignal's simple volume bridge is independently formulated and is not their model.
 - Tversky and Kahneman (1974) motivate active challenge of judgment under uncertainty.
 - Arkes and Blumer (1985) support excluding sunk cost from the forward commitment decision.
+- Aaker and Keller (1990) motivate explicit category/image fit evidence for brand extensions.
+- Loken and Roedder John (1993) motivate dilution and feedback-risk checks.
+- Simonin and Ruth (1998) motivate reciprocal and potentially asymmetric alliance spillover checks.
+- Vredenburg et al. (2020) motivate examining alignment among activism claims, practice, stakeholders, and partner conduct.
 
 No citation validates GateSignal's default thresholds or generated disposition. Those are transparent product design choices and must be adapted or overridden by accountable users.
 
@@ -27,6 +31,14 @@ No citation validates GateSignal's default thresholds or generated disposition. 
 Arkes, H. R., & Blumer, C. (1985). The psychology of sunk cost. *Organizational Behavior and Human Decision Processes, 35*(1), 124–140. <https://doi.org/10.1016/0749-5978(85)90049-4>
 
 Cooper, R. G. (1990). Stage-gate systems: A new tool for managing new products. *Business Horizons, 33*(3), 44–54. <https://doi.org/10.1016/0007-6813(90)90040-I>
+
+Aaker, D. A., & Keller, K. L. (1990). Consumer evaluations of brand extensions. *Journal of Marketing, 54*(1), 27–41. <https://doi.org/10.1177/002224299005400102>
+
+Loken, B., & Roedder John, D. (1993). Diluting brand beliefs: When do brand extensions have a negative impact? *Journal of Marketing, 57*(3), 71–84. <https://doi.org/10.1177/002224299305700305>
+
+Simonin, B. L., & Ruth, J. A. (1998). Is a company known by the company it keeps? Assessing the spillover effects of brand alliances on consumer brand attitudes. *Journal of Marketing Research, 35*(1), 30–42. <https://doi.org/10.1177/002224379803500105>
+
+Vredenburg, J., Kapitan, S., Spry, A., & Kemper, J. A. (2020). Brands taking a stand: Authentic brand activism or woke washing? *Journal of Public Policy & Marketing, 39*(4), 444–460. <https://doi.org/10.1177/0743915620947359>
 
 Cooper, R. G., Edgett, S. J., & Kleinschmidt, E. J. (1999). New product portfolio management: Practices and performance. *Journal of Product Innovation Management, 16*(4), 333–351. <https://doi.org/10.1016/S0737-6782(99)00005-3>
 
@@ -37,4 +49,3 @@ Howard, R. A. (1966). Decision analysis: Applied decision theory. In *Proceeding
 Silk, A. J., & Urban, G. L. (1978). Pre-test-market evaluation of new packaged goods: A model and measurement methodology. *Journal of Marketing Research, 15*(2), 171–191. <https://doi.org/10.1177/002224377801500201>
 
 Tversky, A., & Kahneman, D. (1974). Judgment under uncertainty: Heuristics and biases. *Science, 185*(4157), 1124–1131. <https://doi.org/10.1126/science.185.4157.1124>
-

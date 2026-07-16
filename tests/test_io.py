@@ -15,14 +15,17 @@ def test_excel_template_round_trip_preserves_all_project_tables() -> None:
     loaded = load_project(BytesIO(project_template(project)))
 
     assert loaded["metadata"]["project_name"] == project["metadata"]["project_name"]
-    for key in ["criteria", "cash_flows", "volume_bridge", "risks", "challenge"]:
+    for key in ["criteria", "cash_flows", "volume_bridge", "risks", "brand_evidence", "challenge"]:
         assert not loaded[key].empty
         assert list(loaded[key].columns) == list(project[key].columns)
 
 
 def test_json_round_trip_preserves_tables() -> None:
     project = demo_project()
-    tables = {key: project[key] for key in ["criteria", "cash_flows", "volume_bridge", "risks", "challenge"]}
+    tables = {
+        key: project[key]
+        for key in ["criteria", "cash_flows", "volume_bridge", "risks", "brand_evidence", "challenge"]
+    }
     raw = results_to_json(tables, project["metadata"])
     upload = BytesIO(raw)
     upload.name = "project.json"
@@ -31,6 +34,7 @@ def test_json_round_trip_preserves_tables() -> None:
 
     assert loaded["metadata"]["project_name"] == "LoopDose cleaning concentrate system"
     assert len(loaded["criteria"]) == 8
+    assert len(loaded["brand_evidence"]) == 8
 
 
 def test_spreadsheet_exports_neutralize_formula_like_text() -> None:
@@ -58,4 +62,3 @@ def test_json_export_contains_no_nonstandard_nan_tokens() -> None:
     raw = results_to_json({"results": pd.DataFrame({"irr": [None]})}, {"project": "Test"})
 
     assert json.loads(raw)["results"] == [{"irr": None}]
-
