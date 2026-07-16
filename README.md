@@ -97,6 +97,9 @@ GateSignal is the decision gate of a family of open, local-first marketing-analy
 - **[PositionSignal](https://github.com/UlrikErlingsen/brand-positioning)** — perceptual mapping for the competitive-position evidence.
 - **[DriverSignal](https://github.com/UlrikErlingsen/survey-driver-analysis)** — survey driver analysis for what moves satisfaction.
 - **[AllocSignal](https://github.com/UlrikErlingsen/marketing-mix-allocation)** — response curves and budget allocation once a concept passes the gate.
+- **[ExperimentSignal](https://github.com/UlrikErlingsen/experiment-analysis)** — randomized experiment analysis whose decision status, effect estimate, and interval are exactly the customer-evidence input a gate review wants.
+- **[MeasureSignal](https://github.com/UlrikErlingsen/measurement-validation)** — measurement diagnostics for the multi-item scores behind the evidence register.
+- **[TextSignal](https://github.com/UlrikErlingsen/open-text-analysis)** — open-text evidence: stable language patterns from customer responses, handed to human coding.
 
 ## Privacy, security, and license
 
