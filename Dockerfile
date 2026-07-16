@@ -9,7 +9,7 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
-RUN useradd --create-home --uid 10001 gatesignal && chown -R gatesignal:gatesignal /app
+RUN useradd --create-home --uid 10001 gatesignal
 USER gatesignal
 
 EXPOSE 8597

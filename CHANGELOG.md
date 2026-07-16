@@ -2,6 +2,12 @@
 
 All notable changes to GateSignal are documented here.
 
+## 1.1.1 — 2026-07-16
+
+### Security
+
+- Export sanitizer now also neutralizes formula-like column headers and strips control characters; Docker images keep application code root-owned; defusedxml hardens workbook XML parsing.
+
 ## 1.1.0 — 2026-07-16
 
 - Added a brand-extension and alliance evidence section covering category/image fit, transfer asymmetry, dilution, control and exit rights, disclosure, activism congruence, and reputation spillover.
