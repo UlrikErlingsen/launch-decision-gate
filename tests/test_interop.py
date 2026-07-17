@@ -1,4 +1,4 @@
-"""Tests for the ChoiceSignal trial-intention and PriceSignal price-evidence imports."""
+"""Tests for the ChoiceSignal trial-intention and TagSignal price-evidence imports."""
 
 import json
 
@@ -75,7 +75,7 @@ def test_unreadable_and_empty_inputs_are_rejected():
 def _price_payload(**overrides):
     payload = {
         "schema": PRICE_EVIDENCE_SCHEMA,
-        "producer": {"product": "PriceSignal", "version": "1.0.0"},
+        "producer": {"product": "TagSignal", "version": "1.0.0"},
         "evidence_tier": "Observed transactions",
         "candidate_price": 129.0,
         "reference_price": 119.0,
@@ -103,7 +103,7 @@ def test_valid_price_evidence_round_trips():
     assert result["within_observed_support"] is True
     assert result["evidence_tier"] == "Observed transactions"
     assert result["decision_status"] == "Supported"
-    assert result["source_product"] == "PriceSignal"
+    assert result["source_product"] == "TagSignal"
     assert result["source_version"] == "1.0.0"
 
 

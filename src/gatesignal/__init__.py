@@ -1,6 +1,6 @@
 """GateSignal's transparent decision-support engine."""
 
-__version__ = "1.1.1"
+__version__ = "1.1.2"
 
 from .decision import DecisionBrief, build_decision_brief
 from .brand import BrandEvidenceSummary, analyze_brand_evidence

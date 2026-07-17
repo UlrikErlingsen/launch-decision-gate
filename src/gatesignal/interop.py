@@ -58,7 +58,7 @@ def read_trial_intention(raw: bytes) -> dict[str, object]:
 
 
 def read_price_evidence(raw: bytes) -> dict[str, object]:
-    """Read a PriceSignal price-evidence export (schema ``signal.price-evidence.v1``).
+    """Read a TagSignal price-evidence export (schema ``signal.price-evidence.v1``).
 
     Returns the candidate and reference prices, the declared unit cost and the
     derived unit margin (candidate price minus declared unit cost), the projected
@@ -72,12 +72,12 @@ def read_price_evidence(raw: bytes) -> dict[str, object]:
     try:
         payload = json.loads(raw.decode("utf-8-sig"))
     except Exception as exc:
-        raise DataProblem("This file is not readable JSON. Export it from PriceSignal's evidence page.") from exc
+        raise DataProblem("This file is not readable JSON. Export it from TagSignal's evidence page.") from exc
     if not isinstance(payload, dict) or payload.get("schema") != PRICE_EVIDENCE_SCHEMA:
         raise DataProblem(
-            "This is not a PriceSignal price-evidence export "
+            "This is not a TagSignal price-evidence export "
             f"(expected schema ‘{PRICE_EVIDENCE_SCHEMA}’). Use the GateSignal bridge export "
-            "on PriceSignal's evidence page."
+            "on TagSignal's evidence page."
         )
     try:
         candidate_price = float(payload["candidate_price"])
@@ -88,7 +88,7 @@ def read_price_evidence(raw: bytes) -> dict[str, object]:
         incremental = float(payload["incremental_contribution"])
     except (KeyError, TypeError, ValueError) as exc:
         raise DataProblem(
-            "The export is missing its price or contribution numbers; re-export it from PriceSignal."
+            "The export is missing its price or contribution numbers; re-export it from TagSignal."
         ) from exc
     interval = payload.get("incremental_contribution_interval")
     if (
@@ -98,12 +98,12 @@ def read_price_evidence(raw: bytes) -> dict[str, object]:
     ):
         raise DataProblem(
             "The incremental-contribution interval must be a two-number [low, high] list; "
-            "re-export it from PriceSignal."
+            "re-export it from TagSignal."
         )
     low, high = float(interval[0]), float(interval[1])
     if low > high:
         raise DataProblem(
-            "The incremental-contribution interval is reversed (low exceeds high); re-export it from PriceSignal."
+            "The incremental-contribution interval is reversed (low exceeds high); re-export it from TagSignal."
         )
     if candidate_price <= 0:
         raise DataProblem("The candidate price in the export must be greater than zero.")
@@ -126,6 +126,6 @@ def read_price_evidence(raw: bytes) -> dict[str, object]:
         "decision_status": str(payload.get("decision_status", "")),
         "interpretation": str(payload.get("interpretation", "")),
         "warning": str(payload.get("warning", "")),
-        "source_product": str(producer.get("product", "PriceSignal")),
+        "source_product": str(producer.get("product", "TagSignal")),
         "source_version": str(producer.get("version", "")),
     }

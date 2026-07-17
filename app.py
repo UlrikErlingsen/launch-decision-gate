@@ -670,15 +670,15 @@ elif page == "2 · Economics & scenarios":
                             st.rerun()
             if metadata.get("trial_intention_import"):
                 st.caption(f"Imported: {metadata['trial_intention_import']}. Recorded in the project metadata and exports.")
-        with st.expander("Import price evidence from PriceSignal"):
+        with st.expander("Import price evidence from TagSignal"):
             st.caption(
-                "PriceSignal exports a price-evidence JSON (schema `signal.price-evidence.v1`). "
+                "TagSignal exports a price-evidence JSON (schema `signal.price-evidence.v1`). "
                 "Import it here to ground a scenario's unit contribution in the tested candidate price "
                 "minus its declared unit cost — the number stays an assumption, and the pricing "
                 "caveats travel with it. The market size is your population and is left untouched."
             )
             price_file = st.file_uploader(
-                "PriceSignal price-evidence JSON",
+                "TagSignal price-evidence JSON",
                 type=["json"],
                 key=f"price_evidence_{st.session_state['project_epoch']}",
             )
@@ -701,7 +701,7 @@ elif page == "2 · Economics & scenarios":
                         f"Evidence tier: {evidence['evidence_tier']}."
                     )
                     st.caption(
-                        f"PriceSignal status: **{evidence['decision_status']}** — {evidence['interpretation']}"
+                        f"TagSignal status: **{evidence['decision_status']}** — {evidence['interpretation']}"
                     )
                     if not evidence["within_observed_support"]:
                         st.warning(

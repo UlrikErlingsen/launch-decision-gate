@@ -2,6 +2,10 @@
 
 All notable changes to GateSignal are documented here.
 
+## 1.1.2 — 2026-07-17
+
+- Sibling app PriceSignal is now TagSignal; labels and docs updated. The `signal.price-evidence.v1` schema key is unchanged.
+
 ## 1.1.1 — 2026-07-16
 
 ### Security

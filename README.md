@@ -127,7 +127,7 @@ GateSignal is the decision gate of a family of open, local-first marketing-analy
 - **[TextSignal](https://github.com/UlrikErlingsen/open-text-analysis)** — open-text evidence: stable language patterns from customer responses, handed to human coding.
 - **[RecommendSignal](https://github.com/UlrikErlingsen/recommender-evaluation)** — offline recommendation-policy evidence when the gated concept includes a recommender; commercial or causal lift still belongs in ExperimentSignal.
 
-GateSignal also reads the `signal.price-evidence.v1` bridge from the local **PriceSignal** working build as a unit-margin assumption. That label has a material active-market conflict and is not cleared for public release, so it is intentionally not linked or presented as a public suite handoff.
+GateSignal also reads the `signal.price-evidence.v1` bridge from **[TagSignal](https://github.com/UlrikErlingsen/pricing-analysis)** as a unit-margin assumption for a volume scenario.
 
 The maintained public suite is listed at [ulrikerlingsen.com](https://ulrikerlingsen.com).
 
