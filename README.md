@@ -126,6 +126,8 @@ GateSignal is the decision gate of a family of open, local-first marketing-analy
 - **[MeasureSignal](https://github.com/UlrikErlingsen/measurement-validation)** — measurement diagnostics for the multi-item scores behind the evidence register.
 - **[TextSignal](https://github.com/UlrikErlingsen/open-text-analysis)** — open-text evidence: stable language patterns from customer responses, handed to human coding.
 - **[RecommendSignal](https://github.com/UlrikErlingsen/recommender-evaluation)** — offline recommendation-policy evidence when the gated concept includes a recommender; commercial or causal lift still belongs in ExperimentSignal.
+- **[TraceSignal](https://github.com/UlrikErlingsen/journey-path-analysis)** — descriptive customer-journey evidence from event logs: transitions, path support, drop-off, and Markov removal sensitivity, with no causal channel credit.
+- **[TrackSignal](https://github.com/UlrikErlingsen/brand-tracking)** — brand-tracking wave comparison: separate measures with intervals, multiple-comparison control, and declared practical thresholds.
 
 GateSignal also reads the `signal.price-evidence.v1` bridge from **[TagSignal](https://github.com/UlrikErlingsen/pricing-analysis)** as a unit-margin assumption for a volume scenario.
 
