@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to GateSignal are documented here.
+All notable changes to Gate Signal are documented here.
 
 ## 1.1.2 — 2026-07-17
 

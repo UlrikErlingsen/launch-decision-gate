@@ -1,4 +1,4 @@
-"""Brand-extension and alliance evidence audit for GateSignal."""
+"""Brand-extension and alliance evidence audit for Gate Signal."""
 
 from __future__ import annotations
 

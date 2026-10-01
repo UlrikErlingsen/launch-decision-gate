@@ -11,7 +11,7 @@ if [ -f "$PID_FILE" ] && [ -f "$PORT_FILE" ]; then
   EXISTING_PORT="$(/bin/cat "$PORT_FILE")"
   EXISTING_URL="http://127.0.0.1:${EXISTING_PORT}"
   if /bin/kill -0 "$EXISTING_PID" 2>/dev/null && /usr/bin/curl -fsS "${EXISTING_URL}/_stcore/health" >/dev/null 2>&1; then
-    echo "GateSignal is already running. Opening it now."
+    echo "Gate Signal is already running. Opening it now."
     if [ "${GATESIGNAL_NO_BROWSER:-0}" != "1" ]; then
       /usr/bin/open "$EXISTING_URL"
     fi
@@ -21,14 +21,14 @@ if [ -f "$PID_FILE" ] && [ -f "$PORT_FILE" ]; then
 fi
 
 if ! /usr/bin/env python3 -c 'import sys; raise SystemExit(0 if sys.version_info >= (3, 10) else 1)' 2>/dev/null; then
-  echo "GateSignal needs Python 3.10 or newer."
+  echo "Gate Signal needs Python 3.10 or newer."
   echo "Install it from https://www.python.org/downloads/ and try again."
   read -r -p "Press Return to close..."
   exit 1
 fi
 
 if [ ! -d ".venv" ]; then
-  echo "Creating GateSignal's private Python environment..."
+  echo "Creating Gate Signal's private Python environment..."
   /usr/bin/env python3 -m venv .venv
 fi
 
@@ -38,12 +38,12 @@ export ARROW_DEFAULT_MEMORY_POOL="${ARROW_DEFAULT_MEMORY_POOL:-system}"
 REQUIREMENTS_HASH="$(/usr/bin/shasum -a 256 requirements.txt | /usr/bin/awk '{print $1}')"
 READY_FILE=".venv/.gatesignal-requirements-${REQUIREMENTS_HASH}"
 if [ ! -f "$READY_FILE" ]; then
-  echo "First launch: downloading GateSignal's Python packages. Later launches will be faster."
+  echo "First launch: downloading Gate Signal's Python packages. Later launches will be faster."
   python -m pip --disable-pip-version-check install --prefer-binary -r requirements.txt
   /bin/rm -f .venv/.gatesignal-requirements-* .venv/.gatesignal-ready
   /usr/bin/touch "$READY_FILE"
 else
-  echo "Using the existing GateSignal environment."
+  echo "Using the existing Gate Signal environment."
 fi
 
 if [ -n "${GATESIGNAL_PORT:-}" ]; then
@@ -71,7 +71,7 @@ fi
 URL="http://127.0.0.1:${PORT}"
 MAX_UPLOAD_MB="${GATESIGNAL_MAX_UPLOAD_MB:-50}"
 
-echo "Starting GateSignal at ${URL}..."
+echo "Starting Gate Signal at ${URL}..."
 python -m streamlit run app.py \
   --server.headless=true \
   --server.address=127.0.0.1 \
@@ -95,7 +95,7 @@ trap cleanup EXIT INT TERM
 ATTEMPT=1
 while [ "$ATTEMPT" -le 120 ]; do
   if /usr/bin/curl -fsS "${URL}/_stcore/health" >/dev/null 2>&1; then
-    echo "GateSignal is ready. Opening your browser..."
+    echo "Gate Signal is ready. Opening your browser..."
     if [ "${GATESIGNAL_NO_BROWSER:-0}" != "1" ]; then
       /usr/bin/open "$URL"
     fi
@@ -103,7 +103,7 @@ while [ "$ATTEMPT" -le 120 ]; do
     exit $?
   fi
   if ! /bin/kill -0 "$APP_PID" 2>/dev/null; then
-    echo "GateSignal stopped before it became ready. Review the message above."
+    echo "Gate Signal stopped before it became ready. Review the message above."
     wait "$APP_PID"
     exit $?
   fi
@@ -111,5 +111,5 @@ while [ "$ATTEMPT" -le 120 ]; do
   /bin/sleep 0.25
 done
 
-echo "GateSignal took too long to start. Review the message above, then try again."
+echo "Gate Signal took too long to start. Review the message above, then try again."
 exit 1

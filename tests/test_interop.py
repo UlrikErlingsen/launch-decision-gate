@@ -1,4 +1,4 @@
-"""Tests for the ChoiceSignal trial-intention and TagSignal price-evidence imports."""
+"""Tests for the Choice Signal trial-intention and Tag Signal price-evidence imports."""
 
 import json
 

@@ -49,12 +49,12 @@ def _clean_tables(tables: dict[str, pd.DataFrame]) -> dict[str, pd.DataFrame]:
         copy.columns = [str(column).strip() for column in copy.columns]
         cleaned[key] = copy
     if not cleaned:
-        raise DataProblem("No GateSignal tables were found. Use the downloadable project template as the starting point.")
+        raise DataProblem("No Gate Signal tables were found. Use the downloadable project template as the starting point.")
     return cleaned
 
 
 def load_project(source: str | Path | bytes | BinaryIO) -> dict[str, object]:
-    """Load a GateSignal `.xlsx` or `.json` project without executing content."""
+    """Load a Gate Signal `.xlsx` or `.json` project without executing content."""
     raw, source_name = _source_bytes(source)
     if not raw:
         raise DataProblem("This project file is empty.")
@@ -79,7 +79,7 @@ def load_project(source: str | Path | bytes | BinaryIO) -> dict[str, object]:
         elif extension == ".json":
             payload = json.loads(raw.decode("utf-8-sig"))
             if not isinstance(payload, dict):
-                raise DataProblem("GateSignal JSON must contain a project object.")
+                raise DataProblem("Gate Signal JSON must contain a project object.")
             metadata = payload.get("metadata", {}) if isinstance(payload.get("metadata", {}), dict) else {}
             tables = _clean_tables(
                 {
@@ -89,11 +89,11 @@ def load_project(source: str | Path | bytes | BinaryIO) -> dict[str, object]:
                 }
             )
         else:
-            raise DataProblem("Please use a GateSignal .xlsx or .json project file.")
+            raise DataProblem("Please use a Gate Signal .xlsx or .json project file.")
     except DataProblem:
         raise
     except Exception as exc:
-        raise DataProblem("The project could not be read. Start from the GateSignal template and keep the sheet names.") from exc
+        raise DataProblem("The project could not be read. Start from the Gate Signal template and keep the sheet names.") from exc
     return {"metadata": metadata, **tables, "source_name": source_name}
 
 
@@ -114,7 +114,7 @@ def safe_for_spreadsheet(frame: pd.DataFrame) -> pd.DataFrame:
 def results_to_excel(tables: dict[str, pd.DataFrame]) -> bytes:
     """Create an in-memory evidence pack with readable sheets."""
     if not tables:
-        raise DataProblem("There are no GateSignal tables to export.")
+        raise DataProblem("There are no Gate Signal tables to export.")
     output = BytesIO()
     used: set[str] = set()
     with pd.ExcelWriter(output, engine="openpyxl") as writer:
@@ -158,7 +158,7 @@ def tables_to_csv_zip(tables: dict[str, pd.DataFrame]) -> bytes:
 
 
 def project_template(project: dict[str, object]) -> bytes:
-    """Export an editable GateSignal project bundle."""
+    """Export an editable Gate Signal project bundle."""
     metadata = project.get("metadata", {})
     metadata_frame = pd.DataFrame(
         [{"field": key, "value": value} for key, value in dict(metadata).items()]

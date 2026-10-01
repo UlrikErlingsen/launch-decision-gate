@@ -81,7 +81,7 @@ def blank_project() -> dict[str, object]:
 
 
 def demo_project() -> dict[str, object]:
-    """Return a fully fictional concept case created for GateSignal."""
+    """Return a fully fictional concept case created for Gate Signal."""
     criteria = pd.DataFrame(
         [
             ["Strategy", "Fits the sponsor's refill and reuse direction", 12, 8, 2, False, 6, "Strategy memo and capability interview"],

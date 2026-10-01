@@ -1,6 +1,6 @@
 # Decision guide
 
-GateSignal is most useful when the group agrees on the decision question before debating the score.
+Gate Signal is most useful when the group agrees on the decision question before debating the score.
 
 ## Before the review
 

@@ -1,10 +1,10 @@
 # Methods and limitations
 
-GateSignal separates six objects that are easy to blur in a gate meeting: preferences, evidence, hard constraints, conditional economics, risk preparedness, and accountable judgment.
+Gate Signal separates six objects that are easy to blur in a gate meeting: preferences, evidence, hard constraints, conditional economics, risk preparedness, and accountable judgment.
 
 ## Preference score
 
-For criterion score \(s_i\) and positive raw weight \(w_i\), GateSignal normalizes the weights and calculates:
+For criterion score \(s_i\) and positive raw weight \(w_i\), Gate Signal normalizes the weights and calculates:
 
 \[
 S = \sum_i \frac{w_i}{\sum_j w_j}s_i
@@ -20,7 +20,7 @@ Evidence strength is entered on an ordinal 0–3 scale and kept outside the crit
 E = \sum_i \frac{w_i}{\sum_j w_j}\frac{e_i}{3}
 \]
 
-This is a documentation indicator: high-weight claims supported by stronger evidence increase coverage. It is not statistical confidence, reliability, or validity. GateSignal highlights low-evidence criteria and reports a simple score band if every criterion score were one point lower or higher. That band is a sensitivity prompt, not an uncertainty distribution.
+This is a documentation indicator: high-weight claims supported by stronger evidence increase coverage. It is not statistical confidence, reliability, or validity. Gate Signal highlights low-evidence criteria and reports a simple score band if every criterion score were one point lower or higher. That band is a sensitivity prompt, not an uncertainty distribution.
 
 ## Must-pass gates
 
@@ -40,7 +40,7 @@ Expected NPV is the probability-weighted average of scenario NPVs:
 E[NPV] = \sum_k p_k NPV_k
 \]
 
-Scenario probabilities must sum to one. They are user judgments, not inferred frequencies. GateSignal does not estimate the cost of capital; the accountable decision owner must supply and justify the discount rate.
+Scenario probabilities must sum to one. They are user judgments, not inferred frequencies. Gate Signal does not estimate the cost of capital; the accountable decision owner must supply and justify the discount rate.
 
 IRR is displayed only when non-zero cash flows have exactly one sign change and the polynomial has one valid real solution greater than -100%. This removes many—but not every—interpretation problem. Discounted payback is secondary because it ignores value after the payback point.
 
@@ -74,11 +74,11 @@ The brand evidence register keeps eight questions visible: category fit, image/v
 
 Materiality-weighted evidence coverage is `sum(materiality × evidence_strength / 3) / sum(materiality)`. It is a documentation indicator, not a brand-fit score or success probability. A must-resolve row blocks when evidence is weak/unassessed or raises concern. A material concern also blocks when no owner and next test are documented. These transparent rules keep a persuasive overall case from hiding dilution, partner-control, disclosure, activism, or reputation exposure.
 
-Public brand-extension research motivates testing perceived fit and potential feedback to the parent brand; brand-alliance research motivates reciprocal spillover and asymmetry checks. Brand-activism research motivates checking alignment between claims, practice, stakeholders, and partner conduct. GateSignal turns these into original audit prompts and does not reproduce a proprietary brand model.
+Public brand-extension research motivates testing perceived fit and potential feedback to the parent brand; brand-alliance research motivates reciprocal spillover and asymmetry checks. Brand-activism research motivates checking alignment between claims, practice, stakeholders, and partner conduct. Gate Signal turns these into original audit prompts and does not reproduce a proprietary brand model.
 
 ## Decision disposition
 
-GateSignal applies conservative rules in this order:
+Gate Signal applies conservative rules in this order:
 
 1. failed must-pass gate → **Rework or stop**;
 2. weighted score below 5 → **Stop or redesign**;

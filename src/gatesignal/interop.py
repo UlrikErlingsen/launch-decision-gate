@@ -12,7 +12,7 @@ MAX_INTEROP_BYTES = 5 * 1024 * 1024
 
 
 def read_trial_intention(raw: bytes) -> dict[str, object]:
-    """Read a ChoiceSignal trial-intention export (schema ``signal.trial-intention.v1``).
+    """Read a Choice Signal trial-intention export (schema ``signal.trial-intention.v1``).
 
     Returns the concept name, sample size, and two candidate trial rates as
     decimals: the weighted stated-trial estimate and its unadjusted
@@ -25,22 +25,22 @@ def read_trial_intention(raw: bytes) -> dict[str, object]:
     try:
         payload = json.loads(raw.decode("utf-8-sig"))
     except Exception as exc:
-        raise DataProblem("This file is not readable JSON. Export it from ChoiceSignal's concept-test page.") from exc
+        raise DataProblem("This file is not readable JSON. Export it from Choice Signal's concept-test page.") from exc
     if not isinstance(payload, dict) or payload.get("schema") != TRIAL_INTENTION_SCHEMA:
         raise DataProblem(
-            "This is not a ChoiceSignal trial-intention export "
+            "This is not a Choice Signal trial-intention export "
             f"(expected schema ‘{TRIAL_INTENTION_SCHEMA}’). Use the ‘Download trial intention JSON’ "
-            "button on ChoiceSignal's concept-test page."
+            "button on Choice Signal's concept-test page."
         )
     trial = payload.get("trial_assumption")
     if not isinstance(trial, dict):
-        raise DataProblem("The export is missing its trial_assumption block; re-export it from ChoiceSignal.")
+        raise DataProblem("The export is missing its trial_assumption block; re-export it from Choice Signal.")
     try:
         weighted = float(trial["weighted_trial_%"])
         ceiling = float(trial["ceiling_top_two_box_%"])
         respondents = int(payload["respondents"])
     except (KeyError, TypeError, ValueError) as exc:
-        raise DataProblem("The export is missing its trial numbers; re-export it from ChoiceSignal.") from exc
+        raise DataProblem("The export is missing its trial numbers; re-export it from Choice Signal.") from exc
     if not (0 <= weighted <= 100 and 0 <= ceiling <= 100):
         raise DataProblem("Trial percentages in the export must lie between 0 and 100.")
     if respondents <= 0:
@@ -58,7 +58,7 @@ def read_trial_intention(raw: bytes) -> dict[str, object]:
 
 
 def read_price_evidence(raw: bytes) -> dict[str, object]:
-    """Read a TagSignal price-evidence export (schema ``signal.price-evidence.v1``).
+    """Read a Tag Signal price-evidence export (schema ``signal.price-evidence.v1``).
 
     Returns the candidate and reference prices, the declared unit cost and the
     derived unit margin (candidate price minus declared unit cost), the projected
@@ -72,12 +72,12 @@ def read_price_evidence(raw: bytes) -> dict[str, object]:
     try:
         payload = json.loads(raw.decode("utf-8-sig"))
     except Exception as exc:
-        raise DataProblem("This file is not readable JSON. Export it from TagSignal's evidence page.") from exc
+        raise DataProblem("This file is not readable JSON. Export it from Tag Signal's evidence page.") from exc
     if not isinstance(payload, dict) or payload.get("schema") != PRICE_EVIDENCE_SCHEMA:
         raise DataProblem(
-            "This is not a TagSignal price-evidence export "
-            f"(expected schema ‘{PRICE_EVIDENCE_SCHEMA}’). Use the GateSignal bridge export "
-            "on TagSignal's evidence page."
+            "This is not a Tag Signal price-evidence export "
+            f"(expected schema ‘{PRICE_EVIDENCE_SCHEMA}’). Use the Gate Signal bridge export "
+            "on Tag Signal's evidence page."
         )
     try:
         candidate_price = float(payload["candidate_price"])
@@ -88,7 +88,7 @@ def read_price_evidence(raw: bytes) -> dict[str, object]:
         incremental = float(payload["incremental_contribution"])
     except (KeyError, TypeError, ValueError) as exc:
         raise DataProblem(
-            "The export is missing its price or contribution numbers; re-export it from TagSignal."
+            "The export is missing its price or contribution numbers; re-export it from Tag Signal."
         ) from exc
     interval = payload.get("incremental_contribution_interval")
     if (
@@ -98,12 +98,12 @@ def read_price_evidence(raw: bytes) -> dict[str, object]:
     ):
         raise DataProblem(
             "The incremental-contribution interval must be a two-number [low, high] list; "
-            "re-export it from TagSignal."
+            "re-export it from Tag Signal."
         )
     low, high = float(interval[0]), float(interval[1])
     if low > high:
         raise DataProblem(
-            "The incremental-contribution interval is reversed (low exceeds high); re-export it from TagSignal."
+            "The incremental-contribution interval is reversed (low exceeds high); re-export it from Tag Signal."
         )
     if candidate_price <= 0:
         raise DataProblem("The candidate price in the export must be greater than zero.")

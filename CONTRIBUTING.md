@@ -1,6 +1,6 @@
 # Contributing
 
-Thank you for improving GateSignal.
+Thank you for improving Gate Signal.
 
 1. Open an issue describing the decision problem, expected behavior, and evidence for the change.
 2. Keep preference scores, evidence quality, hard constraints, forecasts, and accountability conceptually separate.

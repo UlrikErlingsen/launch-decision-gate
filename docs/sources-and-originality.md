@@ -2,21 +2,21 @@
 
 ## Intellectual boundary
 
-GateSignal is an independently authored software product. Its structure, interface, wording, fictional example, decision rules, formulas, documentation, and visual identity were created for this repository.
+Gate Signal is an independently authored software product. Its structure, interface, wording, fictional example, decision rules, formulas, documentation, and visual identity were created for this repository.
 
 The project does not reproduce lecture slides, speaker notes, classroom cases, assignments, exam material, course diagrams, proprietary scoring sheets, or an institution-specific gate process. General topics encountered in education—new-product screening, forecasting, capital budgeting, risk, and decision bias—only define the problem domain. The implementation is grounded in public original publications and general mathematical methods.
 
-`Stage-Gate` is a third-party term associated with its respective rights holders. GateSignal is not affiliated with, endorsed by, or a substitute for any proprietary Stage-Gate product, certification, or template. GateSignal uses the ordinary decision-governance meaning of a gate and defines its own workflow.
+`Stage-Gate` is a third-party term associated with its respective rights holders. Gate Signal is not affiliated with, endorsed by, or a substitute for any proprietary Stage-Gate product, certification, or template. Gate Signal uses the ordinary decision-governance meaning of a gate and defines its own workflow.
 
 The bundled LoopDose case, HomeCare organization, names, interviews, forecasts, supplier facts, risks, and monetary values are wholly fictional. They should not be presented as empirical research or company evidence.
 
 ## What the sources support
 
-- Cooper (1990) supplies public background on staged new-product governance; GateSignal does not reproduce its process diagram or gate template.
+- Cooper (1990) supplies public background on staged new-product governance; Gate Signal does not reproduce its process diagram or gate template.
 - Cooper, Edgett, and Kleinschmidt (1999) motivate treating project selection as a resource-allocation and portfolio concern.
 - Edwards (1977) provides a basis for transparent multi-attribute decision measurement.
 - Howard (1966) supplies foundational decision-analysis framing.
-- Silk and Urban (1978) illustrate explicit pre-market measurement and sales-potential modeling; GateSignal's simple volume bridge is independently formulated and is not their model.
+- Silk and Urban (1978) illustrate explicit pre-market measurement and sales-potential modeling; Gate Signal's simple volume bridge is independently formulated and is not their model.
 - Tversky and Kahneman (1974) motivate active challenge of judgment under uncertainty.
 - Arkes and Blumer (1985) support excluding sunk cost from the forward commitment decision.
 - Aaker and Keller (1990) motivate explicit category/image fit evidence for brand extensions.
@@ -24,7 +24,7 @@ The bundled LoopDose case, HomeCare organization, names, interviews, forecasts, 
 - Simonin and Ruth (1998) motivate reciprocal and potentially asymmetric alliance spillover checks.
 - Vredenburg et al. (2020) motivate examining alignment among activism claims, practice, stakeholders, and partner conduct.
 
-No citation validates GateSignal's default thresholds or generated disposition. Those are transparent product design choices and must be adapted or overridden by accountable users.
+No citation validates Gate Signal's default thresholds or generated disposition. Those are transparent product design choices and must be adapted or overridden by accountable users.
 
 ## Primary references
 

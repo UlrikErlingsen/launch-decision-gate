@@ -1,6 +1,6 @@
 cff-version: 1.2.0
-message: "If you use GateSignal, please cite this software."
-title: "GateSignal"
+message: "If you use Gate Signal, please cite this software."
+title: "Gate Signal"
 type: software
 authors:
   - family-names: "Erlingsen"

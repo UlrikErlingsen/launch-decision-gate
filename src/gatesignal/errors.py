@@ -10,6 +10,6 @@ def friendly_message(exc: Exception) -> str:
     if isinstance(exc, DataProblem):
         return str(exc)
     return (
-        "GateSignal could not complete this review. Check the edited tables for blank labels, "
+        "Gate Signal could not complete this review. Check the edited tables for blank labels, "
         "non-numeric values, or values outside the ranges shown, then try again."
     )

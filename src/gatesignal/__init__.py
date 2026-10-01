@@ -1,4 +1,4 @@
-"""GateSignal's transparent decision-support engine."""
+"""Gate Signal's transparent decision-support engine."""
 
 __version__ = "1.1.2"
 

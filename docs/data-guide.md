@@ -1,6 +1,6 @@
 # Data guide
 
-GateSignal projects can be stored as `.xlsx` or `.json`. Download the template from the sidebar to preserve the expected names. Workbook sheets are case-insensitive and spaces are converted to underscores.
+Gate Signal projects can be stored as `.xlsx` or `.json`. Download the template from the sidebar to preserve the expected names. Workbook sheets are case-insensitive and spaces are converted to underscores.
 
 ## Metadata
 
@@ -82,4 +82,4 @@ Adapt the statements to the actual focal brand, category, partner, market, discl
 
 ## Safety limits
 
-GateSignal accepts only `.xlsx` and `.json`; it does not execute macros or embedded code. Uploads default to a 50 MB limit, workbooks may not expand beyond 100 MB, and each analytical table is limited to 20,000 rows. Spreadsheet exports neutralize text beginning with `=`, `+`, `-`, or `@` to reduce formula-injection risk.
+Gate Signal accepts only `.xlsx` and `.json`; it does not execute macros or embedded code. Uploads default to a 50 MB limit, workbooks may not expand beyond 100 MB, and each analytical table is limited to 20,000 rows. Spreadsheet exports neutralize text beginning with `=`, `+`, `-`, or `@` to reduce formula-injection risk.
