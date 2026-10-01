@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "gatesignal"
 version = "1.1.2"
-description = "GateSignal: open, local-first new-product gate decision support"
+description = "Gate Signal: open, local-first new-product gate decision support"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "AGPL-3.0-or-later"
@@ -33,15 +33,19 @@ dependencies = [
   "numpy>=1.24,<3",
   "openpyxl>=3.1,<4",
   "pandas>=2.0,<3",
-  "plotly>=5.18,<8",
-  "streamlit>=1.38,<2",
 ]
 
 [project.optional-dependencies]
+ui = [
+  "plotly>=5.18,<8",
+  "streamlit>=1.38,<2",
+]
 test = [
   "build>=1.2,<2",
+  "plotly>=5.18,<8",
   "pytest>=8,<10",
   "ruff>=0.8,<1",
+  "streamlit>=1.38,<2",
 ]
 
 [project.urls]
@@ -51,6 +55,9 @@ Issues = "https://github.com/UlrikErlingsen/launch-decision-gate/issues"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+"gatesignal.ui" = ["assets/marks/*"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
