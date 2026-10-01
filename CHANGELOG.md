@@ -2,6 +2,24 @@
 
 All notable changes to Gate Signal are documented here.
 
+## 1.2.0 — 2026-10-02
+
+Signal brand refresh and Signal Hub entry point. The decision rules, calculations, project-file contract, sibling-app bridges and exports are unchanged.
+
+### Brand
+
+- Display name written **Gate Signal** (with a space) in the app, README, docs, launchers, export metadata and CITATION. Package, file and environment-variable names stay `gatesignal` / `GATESIGNAL_*`; the `signal.trial-intention.v1` and `signal.price-evidence.v1` schema keys are unchanged. Sibling apps are written with spaced names too (Choice Signal, Tag Signal, …).
+- The app uses the shared `signal_theme` module (Organic Signal design, Decide family colour `#4f80a2`, Figtree): sidebar lockup, masthead, hero, step cards, notes, decision card, footer, Plotly template and the mark as favicon replace the pasted styles. Charts keep their meaning with theme colours.
+- New banner, social preview and marks in `assets/`; the old banner SVG is removed. `.streamlit/config.toml` uses the family colours; the 50 MB upload limit is unchanged.
+- README follows the Signal template; bug-report and feature-request issue templates added.
+
+### Signal Hub contract
+
+- `gatesignal.ui` exposes `APP_INFO` and `render()`, so Signal Hub can embed the app; `app.py` is now a thin standalone entry point.
+- All session-state and widget keys are namespaced `gate:` (including the page selector).
+- `streamlit` and `plotly` moved to a `ui` extra (also in `test`); the decision core installs without them. `requirements.txt` still lists everything.
+- New tests: no Streamlit/Plotly import outside `gatesignal.ui`, `render()` runs from a script without a page config, every widget key is namespaced, and `render()` works from a packaged install without repository files.
+
 ## 1.1.2 — 2026-07-17
 
 - Sibling app PriceSignal is now TagSignal; labels and docs updated. The `signal.price-evidence.v1` schema key is unchanged.
