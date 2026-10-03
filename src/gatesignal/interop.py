@@ -5,10 +5,12 @@ from __future__ import annotations
 import json
 
 from .errors import DataProblem
+from .io import MAX_UPLOAD_BYTES, MAX_UPLOAD_MB
 
 TRIAL_INTENTION_SCHEMA = "signal.trial-intention.v1"
 PRICE_EVIDENCE_SCHEMA = "signal.price-evidence.v1"
-MAX_INTEROP_BYTES = 5 * 1024 * 1024
+# Evidence exports are small summaries, but the in-code check follows Gate Signal's upload cap rather than undercut it.
+MAX_INTEROP_BYTES = MAX_UPLOAD_BYTES
 
 
 def read_trial_intention(raw: bytes) -> dict[str, object]:
@@ -21,7 +23,7 @@ def read_trial_intention(raw: bytes) -> dict[str, object]:
     if not raw:
         raise DataProblem("This file is empty.")
     if len(raw) > MAX_INTEROP_BYTES:
-        raise DataProblem("A trial-intention export should be a small JSON file; this one exceeds 5 MB.")
+        raise DataProblem(f"A trial-intention export should be a small JSON file; this one exceeds {MAX_UPLOAD_MB} MB.")
     try:
         payload = json.loads(raw.decode("utf-8-sig"))
     except Exception as exc:
@@ -68,7 +70,7 @@ def read_price_evidence(raw: bytes) -> dict[str, object]:
     if not raw:
         raise DataProblem("This file is empty.")
     if len(raw) > MAX_INTEROP_BYTES:
-        raise DataProblem("A price-evidence export should be a small JSON file; this one exceeds 5 MB.")
+        raise DataProblem(f"A price-evidence export should be a small JSON file; this one exceeds {MAX_UPLOAD_MB} MB.")
     try:
         payload = json.loads(raw.decode("utf-8-sig"))
     except Exception as exc:

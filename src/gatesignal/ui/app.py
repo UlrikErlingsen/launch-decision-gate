@@ -938,7 +938,8 @@ def _open_uploaded_project(uploaded) -> None:
     if st.session_state.get(k("upload_identity")) == identity:
         return
     try:
-        loaded = load_project(uploaded)
+        with st.spinner("Reading the project file…"):
+            loaded = load_project(uploaded)
         baseline = blank_project()
         merged = {**baseline, **{key: value for key, value in loaded.items() if key != "source_name"}}
         merged["metadata"] = {**baseline["metadata"], **dict(loaded.get("metadata", {}))}

@@ -135,3 +135,20 @@ def test_price_evidence_unit_margin_arithmetic():
     assert zero_cost["unit_margin"] == pytest.approx(129.0)
     with pytest.raises(DataProblem, match="cannot be negative"):
         read_price_evidence(_encode(_price_payload(declared_unit_cost=-1.0)))
+
+
+def test_exports_above_the_old_5_mb_interop_limit_are_read():
+    from gatesignal.interop import MAX_INTEROP_BYTES
+    from gatesignal.io import MAX_UPLOAD_BYTES
+
+    assert MAX_INTEROP_BYTES == MAX_UPLOAD_BYTES
+    padded = _payload(appendix="x" * (6 * 1024 * 1024))
+    assert read_trial_intention(_encode(padded))["respondents"] == 260
+
+
+def test_oversized_interop_export_names_the_upload_cap(monkeypatch):
+    import gatesignal.interop as interop
+
+    monkeypatch.setattr(interop, "MAX_INTEROP_BYTES", 8)
+    with pytest.raises(DataProblem, match=f"exceeds {interop.MAX_UPLOAD_MB} MB"):
+        read_trial_intention(_encode(_payload()))

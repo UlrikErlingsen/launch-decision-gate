@@ -2,6 +2,21 @@
 
 All notable changes to Gate Signal are documented here.
 
+## 1.3.0 — 2026-10-03
+
+Upload limits aligned with the suite's large-data policy. Gate Signal is a small-input tool (a stage-gate scorecard), so it stays in the 50 MB tier; the decision rules, calculations, project-file contract and exports are unchanged.
+
+### Larger datasets
+
+- Larger datasets: every in-code limit is now consistent with the 50 MB tier cap instead of undercutting it. The workbook zip-bomb guard was 100 MB of unzipped content, which a workbook of about 20 MB already exceeds (workbook XML unzips to about five times its size); it is now 500 MB (10× the cap). Choice Signal and Tag Signal evidence imports were capped at 5 MB and now follow the 50 MB upload cap.
+- Only the Gate sheets and the metadata sheet are parsed, so unrelated sheets in a project workbook cost no time or memory (a 34 MB workbook with a 250,000-row extra sheet and six full 20,000-row tables loads in about 9 s at about 160 MB peak memory; it was refused before).
+- `GATESIGNAL_MAX_UPLOAD_MB` can lower the in-code cap but no longer raise it above 50 (it allowed up to 200), and an invalid value falls back to 50 instead of failing at import. The 20,000-row limit per table is unchanged.
+- `run_app.bat` now honors `GATESIGNAL_MAX_UPLOAD_MB` like `run_app.command` (default 50 on both); the Dockerfile sets `STREAMLIT_SERVER_MAX_UPLOAD_SIZE=50`. Reading a project shows a spinner.
+
+### Suite
+
+- Suite: Rival, Reach, Learn and Blueprint Signal added to the suite table.
+
 ## 1.2.0 — 2026-10-02
 
 Signal brand refresh and Signal Hub entry point. The decision rules, calculations, project-file contract, sibling-app bridges and exports are unchanged.

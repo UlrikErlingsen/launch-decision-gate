@@ -62,3 +62,44 @@ def test_json_export_contains_no_nonstandard_nan_tokens() -> None:
     raw = results_to_json({"results": pd.DataFrame({"irr": [None]})}, {"project": "Test"})
 
     assert json.loads(raw)["results"] == [{"irr": None}]
+
+
+def test_upload_cap_follows_the_50_mb_tier_and_the_variable_only_lowers_it(monkeypatch) -> None:
+    from gatesignal import io as gate_io
+
+    for requested, expected in [("200", 50), ("1000", 50), ("10", 10), ("0", 1), ("not a number", 50)]:
+        monkeypatch.setenv("GATESIGNAL_MAX_UPLOAD_MB", requested)
+        assert gate_io._configured_upload_mb() == expected
+    monkeypatch.delenv("GATESIGNAL_MAX_UPLOAD_MB")
+    assert gate_io._configured_upload_mb() == gate_io.TIER_MAX_UPLOAD_MB == 50
+    # A full-size workbook may unzip to the usual 4-8x without hitting the zip-bomb guard (it was 100 MB, i.e. 2x).
+    assert gate_io.MAX_EXPANDED_WORKBOOK_BYTES >= 8 * 50 * 1024 * 1024
+
+
+def test_size_limit_messages_name_the_caps(monkeypatch) -> None:
+    import pytest
+
+    from gatesignal import io as gate_io
+    from gatesignal.errors import DataProblem
+
+    workbook = project_template(demo_project())
+    monkeypatch.setattr(gate_io, "MAX_EXPANDED_WORKBOOK_BYTES", 1024)
+    with pytest.raises(DataProblem, match="expands beyond 0 MB when unzipped"):
+        load_project(BytesIO(workbook))
+    monkeypatch.setattr(gate_io, "MAX_UPLOAD_BYTES", 16)
+    with pytest.raises(DataProblem, match=f"larger than Gate Signal's {gate_io.MAX_UPLOAD_MB} MB limit"):
+        load_project(BytesIO(workbook))
+
+
+def test_unrelated_workbook_sheets_are_not_needed_to_load_a_project() -> None:
+    from openpyxl import load_workbook
+
+    book = load_workbook(BytesIO(project_template(demo_project())))
+    notes = book.create_sheet("Working notes")
+    for row in range(200):
+        notes.append([f"note {row}", "=1+1", row])
+    buffer = BytesIO()
+    book.save(buffer)
+    loaded = load_project(BytesIO(buffer.getvalue()))
+    assert len(loaded["criteria"]) == 8
+    assert "working_notes" not in loaded

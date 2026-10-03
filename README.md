@@ -71,7 +71,7 @@ A project is a portable, editable `.xlsx` workbook or `.json` bundle; download t
 | `Brand evidence` | claim or risk | `domain`, `claim_or_risk`, `evidence_direction`, `evidence_strength`, `materiality`, `must_resolve`, `owner`, `evidence_note`, `next_test` |
 | `Challenge` | check | `check`, `completed`, `note` |
 
-Gate Signal accepts only `.xlsx` and `.json`; it does not execute macros or embedded code. Uploads default to a 50 MB limit, workbooks may not expand beyond 100 MB, and each analytical table is limited to 20,000 rows.
+Gate Signal accepts only `.xlsx` and `.json`; it does not execute macros or embedded code. Gate Signal is a small-input tool in the suite's 50 MB tier: project files and sibling evidence exports are accepted up to 50 MB, a workbook may unzip to at most 500 MB (a zip-bomb guard), only the Gate sheets and the metadata sheet are parsed, and each analytical table is limited to 20,000 rows.
 
 Two sibling bridges can prefill assumptions without duplicating their engines: a Choice Signal trial-intention JSON (`signal.trial-intention.v1`) sets a scenario's trial rate, and a Tag Signal price-evidence JSON (`signal.price-evidence.v1`) sets a scenario's unit contribution. The imported value stays an assumption; its source, caveats, and applied value are recorded in the project metadata and exports.
 
@@ -133,7 +133,7 @@ python -m pip install -r requirements.txt
 python -m streamlit run app.py
 ```
 
-Then open the local address shown in the terminal. Gate Signal prefers local port `8597` and selects a free port if it is occupied. The launchers accept `GATESIGNAL_PORT`; the macOS launcher also accepts `GATESIGNAL_MAX_UPLOAD_MB` and `GATESIGNAL_NO_BROWSER`, and `GATESIGNAL_DEBUG=1` shows technical error details.
+Then open the local address shown in the terminal. Gate Signal prefers local port `8597` and selects a free port if it is occupied. Both launchers accept `GATESIGNAL_PORT` and `GATESIGNAL_MAX_UPLOAD_MB` (the upload limit in MB, default 50; it can lower the limit, not raise it above 50); the macOS launcher also accepts `GATESIGNAL_NO_BROWSER`, and `GATESIGNAL_DEBUG=1` shows technical error details.
 
 ### Docker
 
@@ -142,7 +142,7 @@ docker build -t gatesignal .
 docker run --rm -p 8597:8597 gatesignal
 ```
 
-Then open http://127.0.0.1:8597. The container runs as a non-root user.
+Then open http://127.0.0.1:8597. The container runs as a non-root user. The image sets `STREAMLIT_SERVER_MAX_UPLOAD_SIZE=50`; pass a smaller value with `-e STREAMLIT_SERVER_MAX_UPLOAD_SIZE=…` to lower the upload limit.
 
 ## Privacy
 

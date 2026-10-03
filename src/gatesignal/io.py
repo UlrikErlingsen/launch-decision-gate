@@ -15,9 +15,25 @@ import pandas as pd
 from .errors import DataProblem
 
 
-MAX_UPLOAD_MB = max(1, min(int(os.getenv("GATESIGNAL_MAX_UPLOAD_MB", "50")), 200))
+# Gate Signal is a small-input tool (a stage-gate scorecard), so it sits in the suite's 50 MB tier: the launchers,
+# Docker image and .streamlit/config.toml default to the same cap. GATESIGNAL_MAX_UPLOAD_MB can lower it, never raise it.
+TIER_MAX_UPLOAD_MB = 50
+
+
+def _configured_upload_mb() -> int:
+    try:
+        requested = int(os.getenv("GATESIGNAL_MAX_UPLOAD_MB", str(TIER_MAX_UPLOAD_MB)))
+    except ValueError:
+        return TIER_MAX_UPLOAD_MB
+    return max(1, min(requested, TIER_MAX_UPLOAD_MB))
+
+
+MAX_UPLOAD_MB = _configured_upload_mb()
 MAX_UPLOAD_BYTES = MAX_UPLOAD_MB * 1024 * 1024
-MAX_EXPANDED_WORKBOOK_BYTES = 100 * 1024 * 1024
+# Workbook XML typically unzips to 4-8 times its file size, so a full-size upload must be allowed to expand that far;
+# the guard still stops zip bombs, whose ratios run to hundreds or thousands.
+MAX_WORKBOOK_EXPANSION_RATIO = 10
+MAX_EXPANDED_WORKBOOK_BYTES = MAX_WORKBOOK_EXPANSION_RATIO * TIER_MAX_UPLOAD_MB * 1024 * 1024
 MAX_ROWS_PER_TABLE = 20_000
 ILLEGAL_XML_CHARACTERS = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f]")
 TABLE_KEYS = ["criteria", "cash_flows", "volume_bridge", "risks", "brand_evidence", "challenge"]
@@ -35,12 +51,15 @@ def _source_bytes(source: str | Path | bytes | BinaryIO) -> tuple[bytes, str]:
     return source.read(), name
 
 
+def _table_key(name: object) -> str:
+    key = str(name).strip().casefold().replace(" ", "_")
+    return "cash_flows" if key == "cash_flow" else key
+
+
 def _clean_tables(tables: dict[str, pd.DataFrame]) -> dict[str, pd.DataFrame]:
     cleaned: dict[str, pd.DataFrame] = {}
     for name, frame in tables.items():
-        key = str(name).strip().casefold().replace(" ", "_")
-        if key == "cash_flow":
-            key = "cash_flows"
+        key = _table_key(name)
         if key not in TABLE_KEYS or frame is None or (frame.empty and len(frame.columns) == 0):
             continue
         if len(frame) > MAX_ROWS_PER_TABLE:
@@ -59,15 +78,24 @@ def load_project(source: str | Path | bytes | BinaryIO) -> dict[str, object]:
     if not raw:
         raise DataProblem("This project file is empty.")
     if len(raw) > MAX_UPLOAD_BYTES:
-        raise DataProblem(f"This project file is larger than the configured {MAX_UPLOAD_MB} MB limit.")
+        raise DataProblem(
+            f"This project file is larger than Gate Signal's {MAX_UPLOAD_MB} MB limit. "
+            "A Gate project holds a few scorecard tables; remove unrelated sheets, images or embedded objects."
+        )
     extension = Path(source_name).suffix.lower()
     try:
         if extension == ".xlsx":
             with zipfile.ZipFile(BytesIO(raw)) as workbook:
                 expanded = sum(member.file_size for member in workbook.infolist())
                 if expanded > MAX_EXPANDED_WORKBOOK_BYTES:
-                    raise DataProblem("This workbook expands beyond 100 MB. Remove unrelated sheets or embedded objects.")
-            sheets = pd.read_excel(BytesIO(raw), sheet_name=None)
+                    raise DataProblem(
+                        f"This workbook expands beyond {MAX_EXPANDED_WORKBOOK_BYTES // (1024 * 1024)} MB when unzipped. "
+                        "Remove unrelated sheets or embedded objects."
+                    )
+            with pd.ExcelFile(BytesIO(raw)) as book:
+                # Parse only the Gate tables and the metadata sheet; unrelated sheets cost no time or memory.
+                wanted = [name for name in book.sheet_names if _table_key(name) in {*TABLE_KEYS, "metadata"}]
+                sheets = pd.read_excel(book, sheet_name=wanted) if wanted else {}
             tables = _clean_tables(sheets)
             metadata_sheet = next(
                 (frame for name, frame in sheets.items() if str(name).strip().casefold() == "metadata"),

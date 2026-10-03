@@ -13,4 +13,5 @@ if not exist .venv\.gatesignal-requirements-%REQ_HASH% (
   type nul > .venv\.gatesignal-requirements-%REQ_HASH%
 )
 if not defined GATESIGNAL_PORT set GATESIGNAL_PORT=8597
-python -m streamlit run app.py --server.headless=false --server.address=127.0.0.1 --server.port=%GATESIGNAL_PORT% --server.maxUploadSize=50 --server.fileWatcherType=none --browser.gatherUsageStats=false
+if not defined GATESIGNAL_MAX_UPLOAD_MB set GATESIGNAL_MAX_UPLOAD_MB=50
+python -m streamlit run app.py --server.headless=false --server.address=127.0.0.1 --server.port=%GATESIGNAL_PORT% --server.maxUploadSize=%GATESIGNAL_MAX_UPLOAD_MB% --server.fileWatcherType=none --browser.gatherUsageStats=false

@@ -82,4 +82,4 @@ Adapt the statements to the actual focal brand, category, partner, market, discl
 
 ## Safety limits
 
-Gate Signal accepts only `.xlsx` and `.json`; it does not execute macros or embedded code. Uploads default to a 50 MB limit, workbooks may not expand beyond 100 MB, and each analytical table is limited to 20,000 rows. Spreadsheet exports neutralize text beginning with `=`, `+`, `-`, or `@` to reduce formula-injection risk.
+Gate Signal accepts only `.xlsx` and `.json`; it does not execute macros or embedded code. Gate Signal is a small-input tool in the suite's 50 MB tier: project files and sibling evidence exports are accepted up to 50 MB, a workbook may unzip to at most 500 MB (a zip-bomb guard), only the Gate sheets and the metadata sheet are parsed, and each analytical table is limited to 20,000 rows. Spreadsheet exports neutralize text beginning with `=`, `+`, `-`, or `@` to reduce formula-injection risk.

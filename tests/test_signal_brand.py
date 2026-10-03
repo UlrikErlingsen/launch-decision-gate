@@ -103,3 +103,19 @@ def test_runtime_scaffolding_is_private_and_health_checked() -> None:
     assert "--browser.gatherUsageStats=false" in launcher
     assert "GATESIGNAL_PORT" in launcher
     assert "Gate Signal" in launcher
+
+
+def test_launchers_docker_and_config_share_the_50_mb_small_input_tier() -> None:
+    from gatesignal.io import TIER_MAX_UPLOAD_MB
+
+    config = (ROOT / ".streamlit" / "config.toml").read_text(encoding="utf-8")
+    dockerfile = (ROOT / "Dockerfile").read_text(encoding="utf-8")
+    macos = (ROOT / "run_app.command").read_text(encoding="utf-8")
+    windows = (ROOT / "run_app.bat").read_text(encoding="utf-8")
+    assert TIER_MAX_UPLOAD_MB == 50
+    assert f"maxUploadSize = {TIER_MAX_UPLOAD_MB}" in config
+    assert f'MAX_UPLOAD_MB="${{GATESIGNAL_MAX_UPLOAD_MB:-{TIER_MAX_UPLOAD_MB}}}"' in macos
+    assert f"set GATESIGNAL_MAX_UPLOAD_MB={TIER_MAX_UPLOAD_MB}" in windows
+    assert "--server.maxUploadSize=%GATESIGNAL_MAX_UPLOAD_MB%" in windows
+    assert f"STREAMLIT_SERVER_MAX_UPLOAD_SIZE={TIER_MAX_UPLOAD_MB}" in dockerfile
+    assert "--server.maxUploadSize" not in dockerfile
