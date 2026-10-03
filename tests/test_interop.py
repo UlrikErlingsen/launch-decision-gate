@@ -137,18 +137,20 @@ def test_price_evidence_unit_margin_arithmetic():
         read_price_evidence(_encode(_price_payload(declared_unit_cost=-1.0)))
 
 
-def test_exports_above_the_old_5_mb_interop_limit_are_read():
-    from gatesignal.interop import MAX_INTEROP_BYTES
-    from gatesignal.io import MAX_UPLOAD_BYTES
+def test_local_mode_reads_exports_above_the_demo_cap(monkeypatch):
+    from gatesignal import limits
 
-    assert MAX_INTEROP_BYTES == MAX_UPLOAD_BYTES
-    padded = _payload(appendix="x" * (6 * 1024 * 1024))
+    monkeypatch.delenv("SIGNAL_PUBLIC", raising=False)
+    padded = _payload(appendix="x" * (limits.DEMO_MAX_INTEROP_MB * 1024 * 1024 + 1))
     assert read_trial_intention(_encode(padded))["respondents"] == 260
 
 
-def test_oversized_interop_export_names_the_upload_cap(monkeypatch):
-    import gatesignal.interop as interop
+def test_public_demo_caps_interop_exports(monkeypatch):
+    from gatesignal import limits
 
-    monkeypatch.setattr(interop, "MAX_INTEROP_BYTES", 8)
-    with pytest.raises(DataProblem, match=f"exceeds {interop.MAX_UPLOAD_MB} MB"):
+    monkeypatch.setenv("SIGNAL_PUBLIC", "1")
+    monkeypatch.setattr(limits, "DEMO_MAX_INTEROP_MB", 0)
+    with pytest.raises(DataProblem, match="trial-intention exports up to 0 MB.*public demo only"):
         read_trial_intention(_encode(_payload()))
+    with pytest.raises(DataProblem, match="price-evidence exports up to 0 MB"):
+        read_price_evidence(_encode(_price_payload()))

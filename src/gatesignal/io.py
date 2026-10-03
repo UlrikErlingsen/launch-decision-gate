@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from io import BytesIO
 import json
-import os
 from pathlib import Path
 import re
 from typing import BinaryIO
@@ -12,29 +11,10 @@ import zipfile
 
 import pandas as pd
 
+from . import limits
 from .errors import DataProblem
 
 
-# Gate Signal is a small-input tool (a stage-gate scorecard), so it sits in the suite's 50 MB tier: the launchers,
-# Docker image and .streamlit/config.toml default to the same cap. GATESIGNAL_MAX_UPLOAD_MB can lower it, never raise it.
-TIER_MAX_UPLOAD_MB = 50
-
-
-def _configured_upload_mb() -> int:
-    try:
-        requested = int(os.getenv("GATESIGNAL_MAX_UPLOAD_MB", str(TIER_MAX_UPLOAD_MB)))
-    except ValueError:
-        return TIER_MAX_UPLOAD_MB
-    return max(1, min(requested, TIER_MAX_UPLOAD_MB))
-
-
-MAX_UPLOAD_MB = _configured_upload_mb()
-MAX_UPLOAD_BYTES = MAX_UPLOAD_MB * 1024 * 1024
-# Workbook XML typically unzips to 4-8 times its file size, so a full-size upload must be allowed to expand that far;
-# the guard still stops zip bombs, whose ratios run to hundreds or thousands.
-MAX_WORKBOOK_EXPANSION_RATIO = 10
-MAX_EXPANDED_WORKBOOK_BYTES = MAX_WORKBOOK_EXPANSION_RATIO * TIER_MAX_UPLOAD_MB * 1024 * 1024
-MAX_ROWS_PER_TABLE = 20_000
 ILLEGAL_XML_CHARACTERS = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f]")
 TABLE_KEYS = ["criteria", "cash_flows", "volume_bridge", "risks", "brand_evidence", "challenge"]
 
@@ -62,8 +42,11 @@ def _clean_tables(tables: dict[str, pd.DataFrame]) -> dict[str, pd.DataFrame]:
         key = _table_key(name)
         if key not in TABLE_KEYS or frame is None or (frame.empty and len(frame.columns) == 0):
             continue
-        if len(frame) > MAX_ROWS_PER_TABLE:
-            raise DataProblem(f"The {key.replace('_', ' ')} table exceeds the {MAX_ROWS_PER_TABLE:,}-row safety limit.")
+        row_cap = limits.max_rows_per_table()
+        if row_cap is not None and len(frame) > row_cap:
+            raise DataProblem(
+                limits.demo_limit(f"The {key.replace('_', ' ')} table exceeds the public demo's {row_cap:,}-row limit.")
+            )
         copy = frame.copy()
         copy.columns = [str(column).strip() for column in copy.columns]
         cleaned[key] = copy
@@ -77,20 +60,22 @@ def load_project(source: str | Path | bytes | BinaryIO) -> dict[str, object]:
     raw, source_name = _source_bytes(source)
     if not raw:
         raise DataProblem("This project file is empty.")
-    if len(raw) > MAX_UPLOAD_BYTES:
+    byte_cap = limits.max_upload_bytes()
+    if byte_cap is not None and len(raw) > byte_cap:
         raise DataProblem(
-            f"This project file is larger than Gate Signal's {MAX_UPLOAD_MB} MB limit. "
-            "A Gate project holds a few scorecard tables; remove unrelated sheets, images or embedded objects."
+            limits.demo_limit(f"The public demo accepts project files up to {limits.DEMO_MAX_UPLOAD_MB} MB.")
         )
     extension = Path(source_name).suffix.lower()
     try:
         if extension == ".xlsx":
             with zipfile.ZipFile(BytesIO(raw)) as workbook:
                 expanded = sum(member.file_size for member in workbook.infolist())
-                if expanded > MAX_EXPANDED_WORKBOOK_BYTES:
+                expansion_cap = limits.max_expanded_workbook_bytes()
+                if expansion_cap is not None and expanded > expansion_cap:
                     raise DataProblem(
-                        f"This workbook expands beyond {MAX_EXPANDED_WORKBOOK_BYTES // (1024 * 1024)} MB when unzipped. "
-                        "Remove unrelated sheets or embedded objects."
+                        limits.demo_limit(
+                            f"On the public demo a workbook may unzip to at most {limits.DEMO_MAX_EXPANDED_WORKBOOK_MB} MB."
+                        )
                     )
             with pd.ExcelFile(BytesIO(raw)) as book:
                 # Parse only the Gate tables and the metadata sheet; unrelated sheets cost no time or memory.
@@ -120,6 +105,8 @@ def load_project(source: str | Path | bytes | BinaryIO) -> dict[str, object]:
             raise DataProblem("Please use a Gate Signal .xlsx or .json project file.")
     except DataProblem:
         raise
+    except MemoryError as exc:
+        raise DataProblem(limits.MEMORY_MESSAGE) from exc
     except Exception as exc:
         raise DataProblem("The project could not be read. Start from the Gate Signal template and keep the sheet names.") from exc
     return {"metadata": metadata, **tables, "source_name": source_name}

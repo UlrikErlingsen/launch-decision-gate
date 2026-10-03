@@ -4,13 +4,19 @@ from __future__ import annotations
 
 import json
 
+from . import limits
 from .errors import DataProblem
-from .io import MAX_UPLOAD_BYTES, MAX_UPLOAD_MB
 
 TRIAL_INTENTION_SCHEMA = "signal.trial-intention.v1"
 PRICE_EVIDENCE_SCHEMA = "signal.price-evidence.v1"
-# Evidence exports are small summaries, but the in-code check follows Gate Signal's upload cap rather than undercut it.
-MAX_INTEROP_BYTES = MAX_UPLOAD_BYTES
+
+
+def _check_size(raw: bytes, kind: str) -> None:
+    cap = limits.max_interop_bytes()
+    if cap is not None and len(raw) > cap:
+        raise DataProblem(
+            limits.demo_limit(f"The public demo accepts {kind} exports up to {limits.DEMO_MAX_INTEROP_MB} MB.")
+        )
 
 
 def read_trial_intention(raw: bytes) -> dict[str, object]:
@@ -22,10 +28,11 @@ def read_trial_intention(raw: bytes) -> dict[str, object]:
     """
     if not raw:
         raise DataProblem("This file is empty.")
-    if len(raw) > MAX_INTEROP_BYTES:
-        raise DataProblem(f"A trial-intention export should be a small JSON file; this one exceeds {MAX_UPLOAD_MB} MB.")
+    _check_size(raw, "trial-intention")
     try:
         payload = json.loads(raw.decode("utf-8-sig"))
+    except MemoryError as exc:
+        raise DataProblem(limits.MEMORY_MESSAGE) from exc
     except Exception as exc:
         raise DataProblem("This file is not readable JSON. Export it from Choice Signal's concept-test page.") from exc
     if not isinstance(payload, dict) or payload.get("schema") != TRIAL_INTENTION_SCHEMA:
@@ -69,10 +76,11 @@ def read_price_evidence(raw: bytes) -> dict[str, object]:
     """
     if not raw:
         raise DataProblem("This file is empty.")
-    if len(raw) > MAX_INTEROP_BYTES:
-        raise DataProblem(f"A price-evidence export should be a small JSON file; this one exceeds {MAX_UPLOAD_MB} MB.")
+    _check_size(raw, "price-evidence")
     try:
         payload = json.loads(raw.decode("utf-8-sig"))
+    except MemoryError as exc:
+        raise DataProblem(limits.MEMORY_MESSAGE) from exc
     except Exception as exc:
         raise DataProblem("This file is not readable JSON. Export it from Tag Signal's evidence page.") from exc
     if not isinstance(payload, dict) or payload.get("schema") != PRICE_EVIDENCE_SCHEMA:

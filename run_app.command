@@ -69,7 +69,7 @@ PY
 fi
 
 URL="http://127.0.0.1:${PORT}"
-MAX_UPLOAD_MB="${GATESIGNAL_MAX_UPLOAD_MB:-50}"
+MAX_UPLOAD_MB="${GATESIGNAL_MAX_UPLOAD_MB:-10000}"
 
 echo "Starting Gate Signal at ${URL}..."
 python -m streamlit run app.py \

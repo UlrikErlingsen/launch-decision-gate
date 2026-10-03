@@ -64,31 +64,64 @@ def test_json_export_contains_no_nonstandard_nan_tokens() -> None:
     assert json.loads(raw)["results"] == [{"irr": None}]
 
 
-def test_upload_cap_follows_the_50_mb_tier_and_the_variable_only_lowers_it(monkeypatch) -> None:
-    from gatesignal import io as gate_io
-
-    for requested, expected in [("200", 50), ("1000", 50), ("10", 10), ("0", 1), ("not a number", 50)]:
-        monkeypatch.setenv("GATESIGNAL_MAX_UPLOAD_MB", requested)
-        assert gate_io._configured_upload_mb() == expected
-    monkeypatch.delenv("GATESIGNAL_MAX_UPLOAD_MB")
-    assert gate_io._configured_upload_mb() == gate_io.TIER_MAX_UPLOAD_MB == 50
-    # A full-size workbook may unzip to the usual 4-8x without hitting the zip-bomb guard (it was 100 MB, i.e. 2x).
-    assert gate_io.MAX_EXPANDED_WORKBOOK_BYTES >= 8 * 50 * 1024 * 1024
+def _project_with_rows(rows: int) -> dict:
+    project = demo_project()
+    criteria = project["criteria"]
+    project["criteria"] = pd.concat([criteria] * (rows // len(criteria) + 1), ignore_index=True).iloc[:rows]
+    return project
 
 
-def test_size_limit_messages_name_the_caps(monkeypatch) -> None:
+def _as_json_upload(project: dict) -> BytesIO:
+    keys = ["criteria", "cash_flows", "volume_bridge", "risks", "brand_evidence", "challenge"]
+    upload = BytesIO(results_to_json({key: project[key] for key in keys}, project["metadata"]))
+    upload.name = "project.json"
+    return upload
+
+
+def test_local_mode_accepts_projects_beyond_every_demo_cap(monkeypatch) -> None:
+    from gatesignal import limits
+
+    monkeypatch.delenv("SIGNAL_PUBLIC", raising=False)
+    assert limits.max_upload_bytes() is None and limits.max_rows_per_table() is None
+    loaded = load_project(_as_json_upload(_project_with_rows(limits.DEMO_MAX_ROWS_PER_TABLE + 1)))
+    assert len(loaded["criteria"]) == limits.DEMO_MAX_ROWS_PER_TABLE + 1
+    monkeypatch.setattr(limits, "DEMO_MAX_UPLOAD_MB", 0)
+    monkeypatch.setattr(limits, "DEMO_MAX_EXPANDED_WORKBOOK_MB", 0)
+    assert len(load_project(BytesIO(project_template(demo_project())))["criteria"]) == 8
+
+
+def test_public_demo_enforces_its_caps_with_a_demo_message(monkeypatch) -> None:
+    import pytest
+
+    from gatesignal import limits
+    from gatesignal.errors import DataProblem
+
+    monkeypatch.setenv("SIGNAL_PUBLIC", "1")
+    with pytest.raises(DataProblem, match="20,000-row limit.*downloadable Gate Signal app has no built-in limit"):
+        load_project(_as_json_upload(_project_with_rows(limits.DEMO_MAX_ROWS_PER_TABLE + 1)))
+    workbook = project_template(demo_project())
+    monkeypatch.setattr(limits, "DEMO_MAX_EXPANDED_WORKBOOK_MB", 0)
+    with pytest.raises(DataProblem, match="unzip to at most 0 MB.*public demo only"):
+        load_project(BytesIO(workbook))
+    monkeypatch.setattr(limits, "DEMO_MAX_UPLOAD_MB", 0)
+    with pytest.raises(DataProblem, match="project files up to 0 MB.*public demo only"):
+        load_project(BytesIO(workbook))
+
+
+def test_running_out_of_memory_is_reported_plainly(monkeypatch) -> None:
     import pytest
 
     from gatesignal import io as gate_io
-    from gatesignal.errors import DataProblem
+    from gatesignal.errors import DataProblem, friendly_message
+    from gatesignal.limits import MEMORY_MESSAGE
 
-    workbook = project_template(demo_project())
-    monkeypatch.setattr(gate_io, "MAX_EXPANDED_WORKBOOK_BYTES", 1024)
-    with pytest.raises(DataProblem, match="expands beyond 0 MB when unzipped"):
-        load_project(BytesIO(workbook))
-    monkeypatch.setattr(gate_io, "MAX_UPLOAD_BYTES", 16)
-    with pytest.raises(DataProblem, match=f"larger than Gate Signal's {gate_io.MAX_UPLOAD_MB} MB limit"):
-        load_project(BytesIO(workbook))
+    def no_memory(*args, **kwargs):
+        raise MemoryError
+
+    monkeypatch.setattr(gate_io.pd, "read_excel", no_memory)
+    with pytest.raises(DataProblem, match="not enough memory on this computer"):
+        load_project(BytesIO(project_template(demo_project())))
+    assert friendly_message(MemoryError()) == MEMORY_MESSAGE
 
 
 def test_unrelated_workbook_sheets_are_not_needed_to_load_a_project() -> None:
